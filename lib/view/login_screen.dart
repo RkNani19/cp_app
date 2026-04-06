@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 10),
             Expanded(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                margin: const EdgeInsets.symmetric(horizontal: 14),
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -62,12 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    Row(
+                      children: [ Text(
                       "Welcome Back",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
+
+                    ),
+                      ]
                     ),
                      const SizedBox(height: 10),
 
@@ -78,6 +82,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.grey,
                       ),
                     ),
+
+                    SizedBox(height: 10,),
+                    Text("Customer ID/Mobile Number"),
+                    TextField(decoration: InputDecoration(
+                      labelText: "Enter Customer ID or Mobile",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      isDense: true,
+                    ),
+                    ),
+
+                    SizedBox(height: 10,),
+                    Text("Secret Key"),
+                    TextField(decoration: InputDecoration(
+                      labelText: "Enter your secret key",
+                      prefixIcon:Icon(Icons.key_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)
+                      ) 
+                    ),)
                   ],
                 ),
               ),
