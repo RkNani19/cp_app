@@ -13,12 +13,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFEDF2FA),
       body: SafeArea(
         child: Column(
           children: [
             Center(
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
                     SizedBox(height: 40),
@@ -51,60 +52,106 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 10),
             Center(
-              child: Container(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Container(
                   width: MediaQuery.of(context).size.width * 0.9,
-               margin: const EdgeInsets.symmetric(vertical: 10),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [BoxShadow(blurRadius: 6)],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Welcome Back",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    const Text(
-                      "Enter your credentials to access your account",
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-
-                    SizedBox(height: 10),
-                    Text(
-                      "Customer ID/Mobile Number",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: "Enter Customer ID or Mobile",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [BoxShadow(blurRadius: 4,color: Colors.black12)],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome Back",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        isDense: true,
                       ),
-                    ),
+                      const SizedBox(height: 10),
 
-                    SizedBox(height: 10),
-                    Text("Secret Key", style: TextStyle(fontSize: 16)),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: "Enter your secret key",
-                        prefixIcon: Icon(Icons.key_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        isDense: true,
+                      const Text(
+                        "Enter your credentials to access your account",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
-                    ),
-                  ],
+
+                      SizedBox(height: 10),
+                      Text(
+                        "Customer ID/Mobile Number",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10,),
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: "Enter Customer ID or Mobile",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 10,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 10),
+                      Text(
+                        "Secret Key",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                       SizedBox(height: 10,),
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: "Enter your secret key",
+                          prefixIcon: Icon(Icons.key_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 10,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "Forgot Secret key?",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0B2A6F),),
+                          child: Text(
+                            "Login to Account",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
