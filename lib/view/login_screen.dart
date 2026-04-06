@@ -98,7 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             labelText: "Enter Customer ID or Mobile",
                             floatingLabelBehavior: FloatingLabelBehavior.never,
                             labelStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.person_outline,color: Color(0xFFA6AEBD),),
+                            prefixIcon: Icon(
+                              Icons.person_outline,
+                              color: Color(0xFFA6AEBD),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Color(0xFFA6AEBD)),
@@ -126,14 +129,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             labelText: "Enter your secret key",
                             floatingLabelBehavior: FloatingLabelBehavior.never,
                             labelStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.key_outlined,color: Color(0xFFA6AEBD),),
+                            prefixIcon: Icon(
+                              Icons.key_outlined,
+                              color: Color(0xFFA6AEBD),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Color(0xFFA6AEBD)),
                             ),
 
                             focusedBorder: OutlineInputBorder(
-                               borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Color(0xFFA6AEBD)),
                             ),
                             isDense: true,
@@ -183,43 +189,86 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 8),
 
-             Row(
-  mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Don't have an account? ",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const CreateAccount(title: 'Create Account'),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      // New Row to hold text and icon together
+                      children: const [
+                        Text(
+                          "Create Account",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFD0AE66),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 4), // Small gap
+                        Icon(
+                          Icons.person_add_alt_outlined,
+                          size: 18,
+                          color: Color(0xFFD0AE66),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 16,
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(blurRadius: 4, color: Colors.black12),
+                      ],
+                    ),
+                    child: Wrap(
+  alignment: WrapAlignment.center,
   children: [
-    const Text(
-      "Don't have an account? ",
-      style: TextStyle(fontSize: 14, color: Colors.grey),
+    Text(
+      "Need help? Contact Your sales representive or call us at ",
+      style: TextStyle(color: Colors.grey),
     ),
     GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const CreateAccount(title: 'Create Account'),
-          ),
-        );
-      },
-      child: Row( // New Row to hold text and icon together
-        children: const [
-          Text(
-            "Create Account",
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFFD0AE66),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(width: 4), // Small gap
-          Icon(
-            Icons.person_add_alt_outlined, 
-            size: 18, 
-            color: Color(0xFFD0AE66),
-          ),
-        ],
+      onTap: () {},
+      child: Text(
+        "+91 9876543210",
+        style: TextStyle(
+          fontSize: 14,
+          color: Color(0xFF0B2A6F),
+          fontWeight: FontWeight.bold,
+        ),
       ),
     ),
   ],
 )
+                  ),
+                ),
+              ),
             ],
           ),
         ),
