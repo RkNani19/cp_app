@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/login_screen.dart';
 
 class AppColors {
   static const Color background = Color(0xFFF7F9FC);
@@ -204,6 +205,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
               drawerItem(Icons.person_outline, "CP Details"),
               drawerItem(Icons.call_outlined, "Tele Caller"),
               drawerItem(Icons.person_2_outlined, "Customer Login"),
+
+              const Spacer(), // ✅ NOW CORRECT PLACE
+              // ===== LOGOUT BUTTON =====
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    showLogoutDialog(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.logout, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text(
+                          "Logout",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -306,6 +343,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
+  void showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const LoginScreen(title: "Login"),
+                ),
+                (route) => false,
+              );
+            },
+            child: const Text("Logout"),
+          ),
+        ],
+      );
+    },
+  );
+}
 }
 
 class DrawerColors {
