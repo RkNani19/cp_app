@@ -11,7 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -29,17 +28,13 @@ class _SplashScreenState extends State<SplashScreen> {
       // ✅ Go to Dashboard
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => DashboardScreen(title: ''),
-        ),
+        MaterialPageRoute(builder: (context) => DashboardScreen(title: '')),
       );
     } else {
       // ❌ Go to Login
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(title: ''),
-        ),
+        MaterialPageRoute(builder: (context) => LoginScreen(title: '')),
       );
     }
   }
@@ -47,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+      body: Center(child: Text("GJKedia", style: TextStyle(fontSize: 34, color: Color(0xFF0B2A6F), fontWeight: FontWeight.bold))),
     );
   }
 }

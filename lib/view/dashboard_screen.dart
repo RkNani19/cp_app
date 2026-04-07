@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/cp_details.dart';
+import 'package:gjk_cp/view/cp_login_screen.dart';
 import 'package:gjk_cp/view/login_screen.dart';
 
 class AppColors {
@@ -26,7 +28,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Index 0 is the massive UI we built earlier. The rest are placeholders.
   final List<Widget> _pages = [
     const HomeContent(), // Index 0: Home
-    const PlaceholderScreen(title: "CP Login"), // Index 1
+    const CpLoginScreen(), 
+     const CpDetails(title: "CP Details"),
+     // const EnquiryScreen(),  // Index 1
     const PlaceholderScreen(title: "Enquiry"), // Index 2
     const PlaceholderScreen(title: "Call Us"), // Index 3
     const PlaceholderScreen(title: "Video"), // Index 4
@@ -34,10 +38,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // 3. This function changes the active tab and rebuilds the UI
   void _onItemTapped(int index) {
+  if (index == 0) {
+    // ✅ Home clicked → open HomeScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const DashboardScreen(title: 'Dashboard'),
+      ),
+    );
+  } else {
     setState(() {
       _selectedIndex = index;
     });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -201,10 +215,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 20),
 
               // ===== MENU ITEMS =====
-              drawerItem(Icons.home_outlined, "Home"),
-              drawerItem(Icons.person_outline, "CP Details"),
-              drawerItem(Icons.call_outlined, "Tele Caller"),
-              drawerItem(Icons.person_2_outlined, "Customer Login"),
+              drawerItem(
+                Icons.home_outlined,
+                "Home",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DashboardScreen(title: "Home"),
+                    ),
+                  );
+                },
+              ),
+              drawerItem(
+  Icons.person_outline,
+  "CP Details",
+  onTap: () {
+    Navigator.pop(context); // close drawer
+
+    setState(() {
+      _selectedIndex = 2; // ✅ switch to CP Details screen
+    });
+  },
+),
+              drawerItem(Icons.call_outlined, "Tele Caller", onTap: () {}),
+              drawerItem(
+                Icons.person_2_outlined,
+                "Customer Login",
+                onTap: () {},
+              ),
 
               const Spacer(), // ✅ NOW CORRECT PLACE
               // ===== LOGOUT BUTTON =====
@@ -320,11 +359,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget drawerItem(IconData icon, String title) {
+  Widget drawerItem(
+    IconData icon,
+    String title, {
+    required VoidCallback onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Row(
           children: [
@@ -345,43 +388,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void showLogoutDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text("Logout"),
-        content: const Text("Are you sure you want to logout?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
             ),
-            onPressed: () {
-              Navigator.pop(context);
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () {
+                Navigator.pop(context);
 
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const LoginScreen(title: "Login"),
-                ),
-                (route) => false,
-              );
-            },
-            child: const Text("Logout"),
-          ),
-        ],
-      );
-    },
-  );
-}
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(title: "Login"),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: const Text("Logout"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class DrawerColors {
