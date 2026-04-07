@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/create_account.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
+import 'package:gjk_cp/viewmodel/login_view_model.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.title});
@@ -11,6 +13,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+final TextEditingController mobileController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: 10),
                         TextField(
+                          controller: mobileController,
                           decoration: InputDecoration(
                             labelText: "Enter Customer ID or Mobile",
                             floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -126,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: 10),
                         TextField(
+                           controller: passwordController,
                           decoration: InputDecoration(
                             labelText: "Enter your secret key",
                             floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -168,15 +176,37 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DashboardScreen(title: ''),
-                                ),
-                              );
-                            },
+                          onPressed: () async {
+  if (mobileController.text.isEmpty ||
+      passwordController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Enter all fields")),
+    );
+    return;
+  }
+
+  final vm = Provider.of<LoginViewModel>(context, listen: false);
+
+  bool success = await vm.login(
+    mobileController.text.trim(),
+    passwordController.text.trim(),
+  );
+
+  print("LOGIN RESULT: $success");
+
+  if (success) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardScreen(title: ''),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Invalid login or inactive user")),
+    );
+  }
+},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF0B2A6F),
                             ),
