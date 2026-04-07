@@ -28,9 +28,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Index 0 is the massive UI we built earlier. The rest are placeholders.
   final List<Widget> _pages = [
     const HomeContent(), // Index 0: Home
-    const CpLoginScreen(), 
-     const CpDetails(title: "CP Details"),
-     // const EnquiryScreen(),  // Index 1
+    const CpLoginScreen(),
+    const CpDetails(title: "CP Details"),
+    // const EnquiryScreen(),  // Index 1
     const PlaceholderScreen(title: "Enquiry"), // Index 2
     const PlaceholderScreen(title: "Call Us"), // Index 3
     const PlaceholderScreen(title: "Video"), // Index 4
@@ -38,20 +38,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // 3. This function changes the active tab and rebuilds the UI
   void _onItemTapped(int index) {
-  if (index == 0) {
-    // ✅ Home clicked → open HomeScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const DashboardScreen(title: 'Dashboard'),
-      ),
-    );
-  } else {
     setState(() {
       _selectedIndex = index;
     });
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -219,25 +209,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Icons.home_outlined,
                 "Home",
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DashboardScreen(title: "Home"),
-                    ),
-                  );
+                  Navigator.pop(context); // close drawer
+                  setState(() {
+                    _selectedIndex = 0; // ✅ switch to Home
+                  });
                 },
               ),
               drawerItem(
-  Icons.person_outline,
-  "CP Details",
-  onTap: () {
-    Navigator.pop(context); // close drawer
+                Icons.person_outline,
+                "CP Details",
+                onTap: () {
+                  Navigator.pop(context); // close drawer
 
-    setState(() {
-      _selectedIndex = 2; // ✅ switch to CP Details screen
-    });
-  },
-),
+                  setState(() {
+                    _selectedIndex = 2; // ✅ switch to CP Details screen
+                  });
+                },
+              ),
               drawerItem(Icons.call_outlined, "Tele Caller", onTap: () {}),
               drawerItem(
                 Icons.person_2_outlined,
