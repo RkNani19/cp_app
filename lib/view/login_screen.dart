@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/create_account.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.title});
@@ -167,7 +168,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DashboardScreen(title: ''),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF0B2A6F),
                             ),
@@ -246,30 +255,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         BoxShadow(blurRadius: 4, color: Colors.black12),
                       ],
                     ),
-                    child:  RichText(
-  textAlign: TextAlign.center,
-  text: TextSpan(
-    style: TextStyle(color: Colors.grey, fontSize: 14),
-    children: [
-      TextSpan(
-        text:
-            "Need help? Contact your sales representative or call us at ",
-      ),
-      WidgetSpan(
-        child: GestureDetector(
-          onTap: () {},
-          child: Text(
-            "+91 9876543210",
-            style: TextStyle(
-              color: Color(0xFF0B2A6F),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                        children: [
+                          TextSpan(
+                            text:
+                                "Need help? Contact your sales representative or call us at ",
+                          ),
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: Text(
+                                "+91 9876543210",
+                                style: TextStyle(
+                                  color: Color(0xFF0B2A6F),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
