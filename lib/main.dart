@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:gjk_cp/view/login_screen.dart';
 import 'package:gjk_cp/view/splash_screen.dart';
 import 'package:gjk_cp/viewmodel/login_view_model.dart';
+import 'package:gjk_cp/viewmodel/register_viewmodel.dart';
 import 'package:provider/provider.dart';
-
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => RegisterViewModel()),
+      ],
       child: MyApp(),
     ),
   );
@@ -24,12 +26,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-      
-      
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const SplashScreen(title: 'GJKedia'),
     );
   }
 }
-
