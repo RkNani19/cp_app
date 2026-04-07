@@ -246,26 +246,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         BoxShadow(blurRadius: 4, color: Colors.black12),
                       ],
                     ),
-                    child: Wrap(
-  alignment: WrapAlignment.center,
-  children: [
-    Text(
-      "Need help? Contact Your sales representive or call us at ",
-      style: TextStyle(color: Colors.grey),
-    ),
-    GestureDetector(
-      onTap: () {},
-      child: Text(
-        "+91 9876543210",
-        style: TextStyle(
-          fontSize: 14,
-          color: Color(0xFF0B2A6F),
-          fontWeight: FontWeight.bold,
+                    child:  RichText(
+  textAlign: TextAlign.center,
+  text: TextSpan(
+    style: TextStyle(color: Colors.grey, fontSize: 14),
+    children: [
+      TextSpan(
+        text:
+            "Need help? Contact your sales representative or call us at ",
+      ),
+      WidgetSpan(
+        child: GestureDetector(
+          onTap: () {},
+          child: Text(
+            "+91 9876543210",
+            style: TextStyle(
+              color: Color(0xFF0B2A6F),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
-    ),
-  ],
-)
+    ],
+  ),
+),
                   ),
                 ),
               ),
