@@ -146,68 +146,69 @@ class _CreateAccountState extends State<CreateAccount> {
                         icon: Icons.location_on_outlined,
                         controller: cityController,
                       ),
-                     Consumer<RegisterViewModel>(
-  builder: (context, vm, _) {
+                      Consumer<RegisterViewModel>(
+                        builder: (context, vm, _) {
+                          // 🔥 Load API once
+                          if (vm.projectList.isEmpty) {
+                            vm.fetchProjects();
+                          }
 
-    // 🔥 Load API once
-    if (vm.projectList.isEmpty) {
-      vm.fetchProjects();
-    }
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Interested Project (Optional)',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Interested Project (Optional)',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
+                              DropdownButtonFormField<ProjectModel>(
+                                value: vm.selectedProject,
+                                isExpanded: true,
 
-        DropdownButtonFormField<ProjectModel>(
-          value: vm.selectedProject,
-          isExpanded: true,
+                                dropdownColor: Colors.grey.shade100,
+                                hint: const Text("Select a project"),
 
-           dropdownColor: Colors.grey.shade100,
-          hint: const Text("Select a project"),
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.domain_outlined),
 
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.domain_outlined),
+                                  filled: true, // 👈 enable background
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: borderGrey),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: borderGrey),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                    horizontal: 12,
+                                  ),
+                                ),
 
-             filled: true, // 👈 enable background
-    fillColor: Colors.white, 
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: borderGrey),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: borderGrey),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          ),
+                                items: vm.projectList.map((project) {
+                                  return DropdownMenuItem<ProjectModel>(
+                                    value: project,
+                                    child: Text(project.projectName),
+                                  );
+                                }).toList(),
 
-          items: vm.projectList.map((project) {
-            return DropdownMenuItem<ProjectModel>(
-              value: project,
-              child: Text(project.projectName),
-            );
-          }).toList(),
-
-          onChanged: (value) {
-            if (value != null) {
-              vm.setSelectedProject(value);
-            }
-          },
-        ),
-      ],
-    );
-  },
-),
-SizedBox(height: 8,),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    vm.setSelectedProject(value);
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      SizedBox(height: 8),
                       _buildInputField(
                         label: 'Create Secret Key',
                         hint: 'Create a secret key (min 6 ch...)',
@@ -408,102 +409,131 @@ SizedBox(height: 8,),
           ),
           const SizedBox(height: 8),
 
+          // 🔥 COMMON CONTAINER DESIGN
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderGrey),
+              color: Colors.white,
             ),
 
             child: isDropdown
-    ? Consumer<RegisterViewModel>(
-        builder: (context, vm, _) {
-          return InkWell(
-            onTap: () async {
+                ? Consumer<RegisterViewModel>(
+                    builder: (context, vm, _) {
+                      return InkWell(
+                        onTap: () async {
+                          final viewModel = Provider.of<RegisterViewModel>(
+                            context,
+                            listen: false,
+                          );
 
-              final viewModel = Provider.of<RegisterViewModel>(
-                  context,
-                  listen: false);
+                          // ✅ API CALL (UNCHANGED)
+                          if (viewModel.projectList.isEmpty) {
+                            await viewModel.fetchProjects();
+                          }
 
-              // ✅ Fetch API
-              if (viewModel.projectList.isEmpty) {
-                await viewModel.fetchProjects();
-              }
+                          // ✅ BOTTOM SHEET (UNCHANGED)
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
+                            ),
+                            builder: (_) {
+                              return SizedBox(
+                                height: 400,
+                                child: ListView.builder(
+                                  itemCount: viewModel.projectList.length,
+                                  itemBuilder: (context, index) {
+                                    final project =
+                                        viewModel.projectList[index];
 
-              // ✅ OPEN FULL BOTTOM SHEET
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                builder: (_) {
-                  return SizedBox(
-                    height: 400,
-                    child: ListView.builder(
-                      itemCount: viewModel.projectList.length,
-                      itemBuilder: (context, index) {
-                        final project =
-                            viewModel.projectList[index];
+                                    return ListTile(
+                                      title: Text(project.projectName),
+                                      onTap: () {
+                                        viewModel.setSelectedProject(project);
 
-                        return ListTile(
-                          title: Text(project.projectName),
-                          onTap: () {
-                            viewModel.setSelectedProject(project);
+                                        if (controller != null) {
+                                          controller.text = project.projectName;
+                                        }
 
-                            if (controller != null) {
-                              controller.text =
-                                  project.projectName;
-                            }
+                                        Navigator.pop(context);
+                                      },
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
 
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            },
+                        // 🔥 FIXED ALIGNMENT
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                icon,
+                                color: const Color(0xFFA6AEBD),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
 
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 16, horizontal: 12),
-              child: Row(
-                children: [
-                  Icon(icon,
-                      color: const Color(0xFFA6AEBD), size: 22),
-                  const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  (controller != null &&
+                                          controller.text.isNotEmpty)
+                                      ? controller.text
+                                      : hint,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color:
+                                        (controller != null &&
+                                            controller.text.isNotEmpty)
+                                        ? Colors.black
+                                        : const Color(0xFFA6AEBD),
+                                  ),
+                                ),
+                              ),
 
-                  Expanded(
-                    child: Text(
-                      (controller != null &&
-                              controller.text.isNotEmpty)
-                          ? controller.text
-                          : hint,
-                      style: TextStyle(
-                        color: (controller != null &&
-                                controller.text.isNotEmpty)
-                            ? Colors.black
-                            : const Color(0xFFA6AEBD),
-                      ),
-                    ),
-                  ),
-
-                  const Icon(Icons.keyboard_arrow_down),
-                ],
-              ),
-            ),
-          );
-        },
-      )
-                // 🔽 NORMAL FIELD
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 20,
+                                color: Color(0xFFA6AEBD),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                // 🔽 NORMAL TEXTFIELD (FIXED ALIGNMENT)
                 : TextField(
                     controller: controller,
                     obscureText: isPassword,
+                    style: const TextStyle(fontSize: 14),
+
                     decoration: InputDecoration(
                       hintText: hint,
-                      prefixIcon: Icon(icon),
+
+                      // ✅ ICON FIX
+                      prefixIcon: Icon(
+                        icon,
+                        size: 20,
+                        color: const Color(0xFFA6AEBD),
+                      ),
+
+                      // 🔥 MAIN ALIGNMENT FIX
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
+                      ),
+
                       border: InputBorder.none,
                     ),
                   ),

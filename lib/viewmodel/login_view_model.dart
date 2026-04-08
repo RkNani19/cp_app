@@ -9,24 +9,36 @@ class LoginViewModel extends ChangeNotifier {
   bool isLoading = false;
   LoginModel? user;
 
+  Future<bool> login(String email, String password) async {
+    isLoading = true;
+    notifyListeners();
 
-Future<bool> login(String email, String password) async {
-  isLoading = true;
-  notifyListeners();
+    user = await _service.login(email, password);
 
-  user = await _service.login(email, password);
+    isLoading = false;
+    notifyListeners();
 
-  isLoading = false;
-  notifyListeners();
+    if (user != null && user!.status == 1) {
+      final prefs = await SharedPreferences.getInstance();
 
-  if (user != null && user!.status == 1) {
-    // ✅ Save login status
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLoggedIn", true);
+      // ✅ Basic
+      await prefs.setBool("isLoggedIn", true);
 
-    return true;
-  } else {
-    return false;
+      // ✅ OLD DATA
+      await prefs.setInt("cpId", user!.cpId);
+      await prefs.setString("userName", user!.userName);
+      await prefs.setString("mobile", user!.mobile);
+
+      // 🔥 NEW DATA
+      await prefs.setString("userEmail", user!.userEmail);
+      await prefs.setString("agentUniqueId", user!.agentUniqueId);
+      await prefs.setString("agentAddress", user!.agentAddress);
+      await prefs.setString("panCard", user!.panCard);
+      await prefs.setString("aadharNumber", user!.aadharNumber);
+
+      return true;
+    } else {
+      return false;
+    }
   }
-}
 }
