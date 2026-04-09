@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/cp_details.dart';
 import 'package:gjk_cp/view/cp_login_screen.dart';
+import 'package:gjk_cp/view/home_screen.dart';
 import 'package:gjk_cp/view/login_screen.dart';
+import 'package:gjk_cp/view/tele_caller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppColors {
@@ -28,10 +30,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // 2. This is the list of your "Fragments" (Screens)
   // Index 0 is the massive UI we built earlier. The rest are placeholders.
   final List<Widget> _pages = [
-    const HomeContent(), // Index 0: Home
+    // const HomeContent(), // Index 0: Home
+    HomeScreen(title: "Home"),
     const CpLoginScreen(),
-    const CpDetails(title: "CP Details"),
-    // const EnquiryScreen(),  // Index 1
+    const CpDetails(title: "CP Details"), // Index 1
+    const TeleCaller(title: "Tele Caller"), // Index 2
     const PlaceholderScreen(title: "Enquiry"), // Index 2
     const PlaceholderScreen(title: "Call Us"), // Index 3
     const PlaceholderScreen(title: "Video"), // Index 4
@@ -210,10 +213,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Icons.home_outlined,
                 "Home",
                 onTap: () {
-                  Navigator.pop(context); // close drawer
-                  setState(() {
-                    _selectedIndex = 0; // ✅ switch to Home
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const DashboardScreen(title: "Home"),
+                    ),
+                  );
                 },
               ),
               drawerItem(
@@ -227,7 +233,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   });
                 },
               ),
-              drawerItem(Icons.call_outlined, "Tele Caller", onTap: () {}),
+              drawerItem(
+                Icons.call_outlined,
+                "Tele Caller",
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _selectedIndex = 3;
+                  });
+                },
+              ),
               drawerItem(
                 Icons.person_2_outlined,
                 "Customer Login",
@@ -394,16 +409,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () async {
+                // ❌ CLEAR LOGIN STATUS
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove("isLoggedIn");
+
                 Navigator.pop(context);
 
-                // ✅ Clear SharedPreferences
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.clear();
-
-                // Optional (extra safety)
-                await prefs.setBool("isLoggedIn", false);
-
-                // ✅ Navigate to Login Screen
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

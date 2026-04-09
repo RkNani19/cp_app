@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/model/banner_model.dart';
+import 'package:gjk_cp/model/fetch_project_model.dart';
+import 'package:gjk_cp/model/project_model.dart';
+import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 /// ================= COLORS =================
 class AppColors {
@@ -20,12 +26,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+
+    void initState() {
+    super.initState();
+
+    // 🔥 CALL API HERE
+    Future.microtask(() {
+      Provider.of<BannerViewModel>(context, listen: false).fetchBanners();
+       Provider.of<FethProjectViewmodel>(context, listen: false)
+        .fetchProjects();
+      
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
 
-      body: const SafeArea(
+      body:  SafeArea(
         child: HomeContent(),
       ),
     );
@@ -43,14 +62,41 @@ class HomeContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            HeroBanner(),
+          children:  [
+           Consumer<BannerViewModel>(
+  builder: (context, vm, child) {
+
+    if (vm.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (vm.banners.isEmpty) {
+      return const Text("No Data");
+    }
+
+    return HeroBanner(
+      banner: vm.banners[0], // 🔥 API DATA HERE
+    );
+  },
+),
             SizedBox(height: 20),
             SearchBarWidget(),
             SizedBox(height: 24),
-            SectionHeader(title: "Featured Projects", showViewAll: true),
+            SectionHeader(title: "Featured  ", showViewAll: true),
             SizedBox(height: 12),
-            FeaturedProjectsList(),
+           // FeaturedProjectsList(),
+  Consumer<FethProjectViewmodel>(builder: (context, projectVm, child) {
+    if (projectVm.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (projectVm.projects.isEmpty) {
+      return const Text("No Data");
+    }
+
+    return FeaturedProjectsList(projects: projectVm.projects);
+  }),
+
             SizedBox(height: 24),
             SectionHeader(title: "Quick Actions", showViewAll: false),
             SizedBox(height: 12),
@@ -74,7 +120,8 @@ class HomeContent extends StatelessWidget {
 
 /// ================= HERO BANNER =================
 class HeroBanner extends StatelessWidget {
-  const HeroBanner({Key? key}) : super(key: key);
+   final BannerModel banner;
+  const HeroBanner({Key? key, required this.banner}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,12 +129,13 @@ class HeroBanner extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        image: const DecorationImage(
-          image: NetworkImage(
-            'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1000&auto=format&fit=crop',
-          ),
-          fit: BoxFit.cover,
-        ),
+      image: DecorationImage(
+  image: NetworkImage(banner.image),
+  fit: BoxFit.cover,
+  onError: (exception, stackTrace) {
+    debugPrint("Image failed: ${banner.image}");
+  },
+),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -103,8 +151,8 @@ class HeroBanner extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "GJKedia Signature Towers",
+             Text(
+               banner.name,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -121,7 +169,8 @@ class HeroBanner extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  "Kandivali West, Mumbai",
+                  //"Kandivali West, Mumbai",
+                  banner.location,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 12,
@@ -136,13 +185,14 @@ class HeroBanner extends StatelessWidget {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children:  [
                     Text(
                       "Starting from",
                       style: TextStyle(color: Colors.white70, fontSize: 10),
                     ),
                     Text(
-                      "₹2.45 Cr",
+                     // "₹2.45 Cr",
+                      banner.price,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -256,18 +306,20 @@ class SectionHeader extends StatelessWidget {
 }
 /// ================= FEATURED =================
 class FeaturedProjectsList extends StatelessWidget {
-  const FeaturedProjectsList({Key? key}) : super(key: key);
+  final List<FetchProjectModel> projects;
+  const FeaturedProjectsList({Key? key, required this.projects}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 240,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 2,
+        itemCount: projects.length,
         itemBuilder: (context, index) {
+          final project = projects[index];
           return Container(
             width: 240,
-            margin: const EdgeInsets.only(right: 16),
+            margin:  EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
@@ -277,23 +329,29 @@ class FeaturedProjectsList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
+                  borderRadius: BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
                   child: Image.network(
-                    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1000&auto=format&fit=crop',
+                    project.image,
                     height: 110,
                     width: double.infinity,
                     fit: BoxFit.cover,
+
+                    /// ✅ HANDLE ERROR
+                    errorBuilder: (context, error, stackTrace) {
+                      return  Icon(Icons.broken_image);
+                    },
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding:  EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "GJKedia Signature Towers",
+                       Text(
+                       // "GJKedia Signature Towers",
+                        project.name,
                         style: TextStyle(
                           color: AppColors.primaryDark,
                           fontSize: 13,
@@ -304,7 +362,7 @@ class FeaturedProjectsList extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        children: const [
+                        children:  [
                           Icon(
                             Icons.location_on_outlined,
                             color: AppColors.textGrey,
@@ -312,7 +370,12 @@ class FeaturedProjectsList extends StatelessWidget {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            "Kandivali West, Mumbai",
+                           // "Kandivali West, Mumbai",
+
+                            // project.location.isEmpty
+                            //     ? "No Location"
+                            //     : project.location,
+                             project.location,
                             style: TextStyle(
                               color: AppColors.textGrey,
                               fontSize: 10,
@@ -326,7 +389,7 @@ class FeaturedProjectsList extends StatelessWidget {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children:  [
                               Text(
                                 "Starting from",
                                 style: TextStyle(
@@ -335,7 +398,12 @@ class FeaturedProjectsList extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "₹2.45 Cr",
+                                // "₹2.45 Cr",
+                                //  project.price.isEmpty
+                                //     ? "Price On Request"
+                                //     : "₹${project.price}",
+                                  project.price,
+
                                 style: TextStyle(
                                   color: AppColors.primaryDark,
                                   fontSize: 14,
