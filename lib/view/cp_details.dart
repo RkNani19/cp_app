@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CpDetails extends StatelessWidget {
+class CpDetails extends StatefulWidget {
   const CpDetails({super.key, required this.title});
   final String title;
+
+  @override
+  State<CpDetails> createState() => _CpDetailsState();
+}
+
+class _CpDetailsState extends State<CpDetails> {
+  String userName = "";
+  String mobile = "";
+  String email = "";
+  String address = "";
+  String pan = "";
+  String aadhar = "";
+  String cpId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userName = prefs.getString("userName") ?? "Guest User";
+      mobile = prefs.getString("mobile") ?? "No Mobile";
+      email = prefs.getString("userEmail") ?? "No Email";
+      address = prefs.getString("agentAddress") ?? "No Address";
+      pan = prefs.getString("panCard") ?? "No PAN";
+      aadhar = prefs.getString("aadharNumber") ?? "No Aadhar";
+      cpId = prefs.getInt("cpId")?.toString() ?? "No ID";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +45,6 @@ class CpDetails extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          // ===== TITLE =====
           const Text(
             "Channel Partner Details",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
@@ -20,35 +52,23 @@ class CpDetails extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ================= PROFILE CARD =================
-          profileCard(),
+          profileCard(userName, cpId),
 
           const SizedBox(height: 20),
 
-          // ================= CONTACT =================
-          contactCard(),
+          contactCard(mobile, email, address),
 
           const SizedBox(height: 20),
 
-          // ================= PERFORMANCE =================
-          performanceCard(),
-
-          const SizedBox(height: 20),
-
-          // ================= BANK =================
           bankCard(),
-
-          const SizedBox(height: 20),
-
-          // ================= KYC =================
-          kycCard(),
 
           const SizedBox(height: 30),
 
-          // ================= BUTTON =================
-          editButton(),
+          kycCard(pan, aadhar),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
+
+          editButton(),
         ],
       ),
     );
@@ -59,7 +79,7 @@ class CpDetails extends StatelessWidget {
 /// PROFILE CARD
 ////////////////////////////////////////////////////////////
 
-Widget profileCard() {
+Widget profileCard(String name, String cpId) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -68,7 +88,6 @@ Widget profileCard() {
     ),
     child: Column(
       children: [
-
         Row(
           children: [
             Container(
@@ -83,21 +102,22 @@ Widget profileCard() {
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  "Rajesh Kumar",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700),
+                  name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   "Channel Partner",
                   style: TextStyle(color: Color(0xFFB6C2E1), fontSize: 13),
                 ),
               ],
-            )
+            ),
           ],
         ),
 
@@ -105,11 +125,11 @@ Widget profileCard() {
 
         Row(
           children: [
-            expandedCard("Partner ID", "CP2024001", true),
+            expandedCard("Partner ID", cpId, true),
             const SizedBox(width: 12),
             expandedCard("Member Since", "Jan 2024", false),
           ],
-        )
+        ),
       ],
     ),
   );
@@ -126,9 +146,10 @@ Widget expandedCard(String title, String value, bool isGold) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style:
-                  const TextStyle(color: Color(0xFFB6C2E1), fontSize: 12)),
+          Text(
+            title,
+            style: const TextStyle(color: Color(0xFFB6C2E1), fontSize: 12),
+          ),
           const SizedBox(height: 6),
           Text(
             value,
@@ -148,7 +169,7 @@ Widget expandedCard(String title, String value, bool isGold) {
 /// CONTACT
 ////////////////////////////////////////////////////////////
 
-Widget contactCard() {
+Widget contactCard(String mobile, String email, String address) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -159,131 +180,23 @@ Widget contactCard() {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Contact Information",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 16),
-        contactItem(Icons.phone_outlined, "Phone Number",
-            "+91 98765 43210"),
-        const SizedBox(height: 14),
-        contactItem(Icons.email_outlined, "Email Address",
-            "rajesh.kumar@example.com"),
-        const SizedBox(height: 14),
-        contactItem(Icons.location_on_outlined, "Address",
-            "Andheri West, Mumbai - 400058"),
-      ],
-    ),
-  );
-}
-
-////////////////////////////////////////////////////////////
-/// PERFORMANCE
-////////////////////////////////////////////////////////////
-
-Widget performanceCard() {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: const Color(0xFFE5E7EB)),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
         const Text(
-          "Performance Stats",
+          "Contact Information",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-
         const SizedBox(height: 16),
 
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.2,
-          children: const [
-            statBox(Icons.trending_up, "₹45.2 Cr", "Total Sales"),
-            statBox(Icons.people_outline, "24", "Active Leads"),
-            statBox(Icons.access_time, "12", "Units Sold"),
-            statBox(Icons.workspace_premium, "Gold", "Partner Tier", isGold: true),
-          ],
-        )
+        contactItem(Icons.phone_outlined, "Phone Number", mobile),
+        const SizedBox(height: 14),
+
+        contactItem(Icons.email_outlined, "Email Address", email),
+        const SizedBox(height: 14),
+
+        contactItem(Icons.location_on_outlined, "Address", address),
       ],
     ),
   );
 }
-
-class statBox extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  final bool isGold;
-
-  const statBox(
-    this.icon,
-    this.value,
-    this.label, {
-    this.isGold = false,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-
-          // ===== ICON =====
-          Icon(
-            icon,
-            size: 24,
-            color: isGold
-                ? const Color(0xFFC49A50)
-                : const Color(0xFF0A1F66),
-          ),
-
-          const SizedBox(height: 10),
-
-          // ===== VALUE =====
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isGold
-                  ? const Color(0xFFC49A50)
-                  : const Color(0xFF0A1F66),
-            ),
-          ),
-
-          const SizedBox(height: 4),
-
-          // ===== LABEL =====
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF64748B),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-////////////////////////////////////////////////////////////
-/// BANK
-////////////////////////////////////////////////////////////
 
 Widget bankCard() {
   return Container(
@@ -297,7 +210,6 @@ Widget bankCard() {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         // ===== TITLE =====
         const Text(
           "Bank Details",
@@ -331,8 +243,6 @@ Widget bankItem(String title, String value) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-
-      // LABEL
       Text(
         title,
         style: const TextStyle(
@@ -344,7 +254,6 @@ Widget bankItem(String title, String value) {
 
       const SizedBox(height: 4),
 
-      // VALUE
       Text(
         value,
         style: const TextStyle(
@@ -356,18 +265,11 @@ Widget bankItem(String title, String value) {
     ],
   );
 }
- 
+////////////////////////////////////////////////////////////
+/// KYC
+////////////////////////////////////////////////////////////
 
-Widget kycCard() {
-  return cardBlock("KYC Documents", [
-    kycItem("PAN Card", "ABCDE1234F"),
-    kycItem("Aadhar Card", "XXXX XXXX 5678"),
-  ]);
-}
-
- 
-
-Widget cardBlock(String title, List<Widget> children) {
+Widget kycCard(String pan, String aadhar) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -378,27 +280,14 @@ Widget cardBlock(String title, List<Widget> children) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        const Text(
+          "KYC Documents",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 14),
-        ...children,
-      ],
-    ),
-  );
-}
 
-Widget infoText(String title, String value) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-        const SizedBox(height: 2),
-        Text(value,
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600)),
+        kycItem("PAN Card", pan),
+        kycItem("Aadhar Card", aadhar),
       ],
     ),
   );
@@ -420,8 +309,7 @@ Widget kycItem(String title, String value) {
           children: [
             Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
-            Text(value,
-                style: const TextStyle(color: Color(0xFF64748B))),
+            Text(value, style: const TextStyle(color: Color(0xFF64748B))),
           ],
         ),
         Container(
@@ -430,13 +318,19 @@ Widget kycItem(String title, String value) {
             color: Colors.green.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Text("Verified",
-              style: TextStyle(color: Colors.green, fontSize: 12)),
-        )
+          child: const Text(
+            "Verified",
+            style: TextStyle(color: Colors.green, fontSize: 12),
+          ),
+        ),
       ],
     ),
   );
 }
+
+////////////////////////////////////////////////////////////
+/// COMMON
+////////////////////////////////////////////////////////////
 
 Widget contactItem(IconData icon, String title, String value) {
   return Row(
@@ -455,19 +349,20 @@ Widget contactItem(IconData icon, String title, String value) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 12, color: Color(0xFF64748B))),
-            Text(value,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600, fontSize: 14)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+            ),
+            Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
           ],
         ),
-      )
+      ),
     ],
   );
 }
-
 
 Widget editButton() {
   return Container(
@@ -480,10 +375,7 @@ Widget editButton() {
     child: const Center(
       child: Text(
         "Edit Profile Details",
-        style: TextStyle(
-          color: Color(0xFF0A1F66),
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(color: Color(0xFF0A1F66), fontWeight: FontWeight.w600),
       ),
     ),
   );

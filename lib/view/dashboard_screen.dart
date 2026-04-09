@@ -27,21 +27,20 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  String userName = "";
+  String mobile = "";
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userName = prefs.getString("userName") ?? "Guest User";
+      mobile = prefs.getString("mobile") ?? "No Mobile";
+    });
+  }
+
   // 1. This variable tracks which bottom tab is currently selected
   int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  // 2. This is the list of your "Fragments" (Screens)
-  // Index 0 is the massive UI we built earlier. The rest are placeholders.
-  // final List<Widget> _pages = [
-  //   // const HomeContent(), // Index 0: Home
-  //   HomeScreen(title: "Home"),
-  //   const CpLoginScreen(),
-  //   const CpDetails(title: "CP Details"), // Index 1
-  //   const TeleCaller(title: "Tele Caller"), // Index 2
-  //   const Enquiry(title: 'Enquiry'), // Index 2
-  //   const PlaceholderScreen(title: "Call Us"), // Index 3
-  //   const PlaceholderScreen(title: "Video"), // Index 4
-  // ];
 
   final List<Widget> _pages = [
     HomeScreen(title: "Home"), // 0
@@ -190,19 +189,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(width: 14),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          "Rajesh Kumar",
-                          style: TextStyle(
+                          userName,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          "+91 98765 43210",
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                          mobile,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -454,6 +456,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData(); // 🔥 VERY IMPORTANT
   }
 }
 
