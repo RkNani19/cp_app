@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/call_us.dart';
 import 'package:gjk_cp/view/cp_details.dart';
 import 'package:gjk_cp/view/cp_login_screen.dart';
+import 'package:gjk_cp/view/enquiry.dart';
 import 'package:gjk_cp/view/home_screen.dart';
 import 'package:gjk_cp/view/login_screen.dart';
 import 'package:gjk_cp/view/tele_caller.dart';
+import 'package:gjk_cp/view/video_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppColors {
@@ -29,15 +32,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   // 2. This is the list of your "Fragments" (Screens)
   // Index 0 is the massive UI we built earlier. The rest are placeholders.
+  // final List<Widget> _pages = [
+  //   // const HomeContent(), // Index 0: Home
+  //   HomeScreen(title: "Home"),
+  //   const CpLoginScreen(),
+  //   const CpDetails(title: "CP Details"), // Index 1
+  //   const TeleCaller(title: "Tele Caller"), // Index 2
+  //   const Enquiry(title: 'Enquiry'), // Index 2
+  //   const PlaceholderScreen(title: "Call Us"), // Index 3
+  //   const PlaceholderScreen(title: "Video"), // Index 4
+  // ];
+
   final List<Widget> _pages = [
-    // const HomeContent(), // Index 0: Home
-    HomeScreen(title: "Home"),
-    const CpLoginScreen(),
-    const CpDetails(title: "CP Details"), // Index 1
-    const TeleCaller(title: "Tele Caller"), // Index 2
-    const PlaceholderScreen(title: "Enquiry"), // Index 2
-    const PlaceholderScreen(title: "Call Us"), // Index 3
-    const PlaceholderScreen(title: "Video"), // Index 4
+    HomeScreen(title: "Home"), // 0
+    CpLoginScreen(title: "CP Login"), // 1
+    Enquiry(title: 'Enquiry'), // 2
+    CallUs(title: "Call Us"), // 3
+    VideoScreen(title: "Video"), // 4
+    CpDetails(title: "CP Details"), // 5 ✅
+    TeleCaller(title: "Tele Caller"), // 6 ✅
   ];
 
   // 3. This function changes the active tab and rebuilds the UI
@@ -229,7 +242,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.pop(context); // close drawer
 
                   setState(() {
-                    _selectedIndex = 2; // ✅ switch to CP Details screen
+                    _selectedIndex = 5; // ✅ switch to CP Details screen
                   });
                 },
               ),
@@ -239,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
-                    _selectedIndex = 3;
+                    _selectedIndex = 6;
                   });
                 },
               ),
@@ -310,7 +323,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed, // Required when > 3 items
           backgroundColor: AppColors.white,
-          currentIndex: _selectedIndex,
+          // currentIndex: _selectedIndex,
+          currentIndex: _selectedIndex > 4 ? 0 : _selectedIndex,
           onTap: _onItemTapped,
           selectedItemColor: AppColors.accentGold,
           unselectedItemColor: AppColors.textGrey,
@@ -367,25 +381,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     IconData icon,
     String title, {
     required VoidCallback onTap,
+    bool isSelected = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 22),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
+        child: Container(
+          height: 40, // 🔥 INCREASE HEIGHT HERE
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.white.withOpacity(0.2) // 🔥 SHADE COLOR
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white, size: 22),
+              const SizedBox(width: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

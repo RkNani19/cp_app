@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/model/project_model.dart';
+import 'package:gjk_cp/view/login_screen.dart';
 import 'package:gjk_cp/viewmodel/register_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -351,6 +353,16 @@ class _CreateAccountState extends State<CreateAccount> {
                           color: accentGold,
                           fontWeight: FontWeight.w600,
                         ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    LoginScreen(title: 'Login'),
+                              ),
+                            );
+                          },
                       ),
                     ],
                   ),

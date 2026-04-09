@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import 'dashboard_screen.dart';
@@ -14,6 +15,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
+     SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.white, // same as background
+      statusBarIconBrightness: Brightness.dark, // icons visible
+    ),
+  );
     checkLogin();
   }
 
@@ -41,8 +49,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text("GJKedia", style: TextStyle(fontSize: 34, color: Color(0xFF0B2A6F), fontWeight: FontWeight.bold))),
-    );
+   return Scaffold(
+  backgroundColor: Colors.white,
+
+  /// 🔥 ADD THIS
+  body: SafeArea(
+    top: false, // ✅ remove top padding
+    bottom: false,
+    child: Center(
+      child: Text(
+        "GJKedia",
+        style: TextStyle(
+          fontSize: 34,
+          color: Color(0xFF021148),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  ),
+);
   }
 }

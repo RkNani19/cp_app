@@ -15,10 +15,8 @@ void main() {
         //  ChangeNotifierProvider(
         //   create: (_) => BannerViewModel()..fetchBanners(),
         // ),
-        ChangeNotifierProvider(
-  create: (_) => BannerViewModel()),
-  ChangeNotifierProvider(
-          create: (_) => FethProjectViewmodel())
+        ChangeNotifierProvider(create: (_) => BannerViewModel()),
+        ChangeNotifierProvider(create: (_) => FethProjectViewmodel()),
       ],
       child: MyApp(),
     ),

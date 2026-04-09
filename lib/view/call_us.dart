@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
-class CallUs extends StatelessWidget {
-  const CallUs({super.key});
+class CallUs extends StatefulWidget {
+  const CallUs({super.key, required this.title});
+  final String title;
 
   @override
+  State<CallUs> createState() => _CallUsState();
+}
+
+class _CallUsState extends State<CallUs> {
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(body: Center(child: Text("Call Us")));
   }
 }

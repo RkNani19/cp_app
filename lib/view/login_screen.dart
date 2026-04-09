@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xFFEDF2FA),
+      backgroundColor: Color(0xFFF3F5F9),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -36,14 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 34,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0B2A6F),
+                          color: Color(0xFF021148),
                         ),
                       ),
                       SizedBox(height: 10),
                       Text(
                         "HOMES",
                         style: TextStyle(
-                          color: Color(0xFFB89B5E),
+                          color: Color(0xFFC8A573),
                           fontSize: 16,
                           // fontWeight: FontWeight.bold,
                         ),
@@ -52,8 +52,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 10),
                       Text(
                         "Customer Portal Login",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(fontSize: 16,
+                    fontWeight: FontWeight.w500, color: Color(0xFF5A667E),
                       ),
+                      )
                     ],
                   ),
                 ),
@@ -82,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           "Welcome Back",
                           style: TextStyle(
+                              color: Color(0xFF021148),
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -90,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const Text(
                           "Enter your credentials to access your account",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(fontSize: 16, color:Color(0xFF7B8599)),
                         ),
 
                         SizedBox(height: 10),
@@ -165,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Forgot Secret key?",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFD0AE66),
+                              color: Color(0xFFC8A573),
                             ),
                           ),
                         ),
@@ -215,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF0B2A6F),
+                              backgroundColor: Color(0xFF021148),
                             ),
                             child: Text(
                               "Login to Account",
@@ -259,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Create Account",
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFFD0AE66),
+                            color: Color(0xFFC8A573),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -286,11 +289,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFFE1E4EA),
                       borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(blurRadius: 4, color: Colors.black12),
-                      ],
+                      // boxShadow: [
+                      //   BoxShadow(blurRadius: 4, color: Colors.black12),
+                      // ],
                     ),
                     child: RichText(
                       textAlign: TextAlign.center,
@@ -300,6 +303,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextSpan(
                             text:
                                 "Need help? Contact your sales representative or call us at ",
+                                style:TextStyle(color: Color(0xFF657189),
+                                 fontSize: 12.5,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,) 
+
                           ),
                           WidgetSpan(
                             child: GestureDetector(
@@ -307,7 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 "+91 9876543210",
                                 style: TextStyle(
-                                  color: Color(0xFF0B2A6F),
+                                  color: Color(0xFF021148),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
