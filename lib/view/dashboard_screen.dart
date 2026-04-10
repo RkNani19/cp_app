@@ -261,7 +261,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               drawerItem(
                 Icons.person_2_outlined,
                 "Customer Login",
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen(title: '')));
+                },
               ),
 
               const Spacer(), // ✅ NOW CORRECT PLACE
