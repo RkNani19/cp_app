@@ -16,12 +16,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-     SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.white, // same as background
-      statusBarIconBrightness: Brightness.dark, // icons visible
-    ),
-  );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // same as background
+        statusBarIconBrightness: Brightness.dark, // icons visible
+      ),
+    );
     checkLogin();
   }
 
@@ -49,24 +49,41 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-  backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
 
-  /// 🔥 ADD THIS
-  body: SafeArea(
-    top: false, // ✅ remove top padding
-    bottom: false,
-    child: Center(
-      child: Text(
-        "GJKedia",
-        style: TextStyle(
-          fontSize: 34,
-          color: Color(0xFF021148),
-          fontWeight: FontWeight.bold,
+      /// 🔥 ADD THIS
+      body: SafeArea(
+        top: false, // ✅ remove top padding
+        bottom: false,
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "GJKedia",
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Color(0xFF021148),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                //  SizedBox(height: 5,),
+                Text(
+                  "H O M E S",
+                  style: TextStyle(
+                    fontSize: 16,
+                    //fontWeight: FontWeight.bold,
+                    color: Color(0xFFC8A573),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-    ),
-  ),
-);
+    );
   }
 }

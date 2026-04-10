@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 
 class CallUs extends StatefulWidget {
   const CallUs({super.key, required this.title});
@@ -11,6 +12,17 @@ class CallUs extends StatefulWidget {
 class _CallUsState extends State<CallUs> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Call Us")));
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen(title: '')),
+          (route) => false,
+        );
+        return false;
+      },
+      child: Scaffold(body: Center(child: Text("Call Us"))),
+    );
   }
 }
+

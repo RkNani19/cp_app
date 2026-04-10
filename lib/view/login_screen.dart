@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/config/app_config.dart';
 import 'package:gjk_cp/view/create_account.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:gjk_cp/viewmodel/login_view_model.dart';
@@ -15,6 +16,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    debugPrint("APP BASE URL => ${AppConfig.baseUrl}");
+
+    Future.microtask(() {
+      context.read<LoginViewModel>();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 
 class TeleCaller extends StatefulWidget {
   final String title;
@@ -14,77 +15,87 @@ class _TeleCallerState extends State<TeleCaller> {
   Widget build(BuildContext context) {
     double itemAspectRatio = 1.05;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: SafeArea(
-        child: SingleChildScrollView( // ✅ IMPORTANT FIX
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                /// Title
-                const Text(
-                  "Tele Caller Dashboard",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D1B2A),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen(title: "")),
+          (route) => false,
+        );
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            // ✅ IMPORTANT FIX
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Title
+                  const Text(
+                    "Tele Caller Dashboard",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0D1B2A),
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                /// Dashboard Cards
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true, // ✅ IMPORTANT
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: itemAspectRatio,
-                  children: [
-                    _buildStatCard(
-                      icon: Icons.phone_outlined,
-                      iconColor: const Color(0xFF1A237E),
-                      bgColor: const Color(0xFFE8EAF6),
-                      value: "47",
-                      label: "Calls Today",
-                      valueColor: const Color(0xFF1A237E),
-                    ),
-                    _buildStatCard(
-                      icon: Icons.people_outline,
-                      iconColor: const Color(0xFFB8860B),
-                      bgColor: const Color(0xFFFFF9E6),
-                      value: "12",
-                      label: "Interested",
-                      valueColor: const Color(0xFFB8860B),
-                    ),
-                    _buildStatCard(
-                      icon: Icons.trending_up,
-                      iconColor: const Color(0xFF2E7D32),
-                      bgColor: const Color(0xFFE8F5E9),
-                      value: "8",
-                      label: "Site Visits",
-                      valueColor: const Color(0xFF2E7D32),
-                    ),
-                    _buildStatCard(
-                      icon: Icons.calendar_today_outlined,
-                      iconColor: const Color(0xFFF9A825),
-                      bgColor: const Color(0xFFFFFDE7),
-                      value: "15",
-                      label: "Follow-ups Due",
-                      valueColor: const Color(0xFFF9A825),
-                    ),
-                  ],
-                ),
+                  /// Dashboard Cards
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true, // ✅ IMPORTANT
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: itemAspectRatio,
+                    children: [
+                      _buildStatCard(
+                        icon: Icons.phone_outlined,
+                        iconColor: const Color(0xFF1A237E),
+                        bgColor: const Color(0xFFE8EAF6),
+                        value: "47",
+                        label: "Calls Today",
+                        valueColor: const Color(0xFF1A237E),
+                      ),
+                      _buildStatCard(
+                        icon: Icons.people_outline,
+                        iconColor: const Color(0xFFB8860B),
+                        bgColor: const Color(0xFFFFF9E6),
+                        value: "12",
+                        label: "Interested",
+                        valueColor: const Color(0xFFB8860B),
+                      ),
+                      _buildStatCard(
+                        icon: Icons.trending_up,
+                        iconColor: const Color(0xFF2E7D32),
+                        bgColor: const Color(0xFFE8F5E9),
+                        value: "8",
+                        label: "Site Visits",
+                        valueColor: const Color(0xFF2E7D32),
+                      ),
+                      _buildStatCard(
+                        icon: Icons.calendar_today_outlined,
+                        iconColor: const Color(0xFFF9A825),
+                        bgColor: const Color(0xFFFFFDE7),
+                        value: "15",
+                        label: "Follow-ups Due",
+                        valueColor: const Color(0xFFF9A825),
+                      ),
+                    ],
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                /// ✅ CALL LIST SECTION ADDED
-                _buildCallListSection(),
-              ],
+                  /// ✅ CALL LIST SECTION ADDED
+                  _buildCallListSection(),
+                ],
+              ),
             ),
           ),
         ),
@@ -121,10 +132,7 @@ class _TeleCallerState extends State<TeleCaller> {
           Container(
             height: 44,
             width: 44,
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
             child: Icon(icon, color: iconColor, size: 22),
           ),
           const Spacer(),
@@ -155,17 +163,13 @@ class _TeleCallerState extends State<TeleCaller> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         /// Header
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               "Call List",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -249,7 +253,10 @@ class _TeleCallerState extends State<TeleCaller> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), // Smaller padding
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3,
+                ), // Smaller padding
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFEBEE),
                   borderRadius: BorderRadius.circular(8),
@@ -267,7 +274,6 @@ class _TeleCallerState extends State<TeleCaller> {
           ),
 
           const SizedBox(height: 4), // Reduced from 8
-
           /// Phone Number
           Row(
             children: [
@@ -284,7 +290,6 @@ class _TeleCallerState extends State<TeleCaller> {
           ),
 
           const SizedBox(height: 6), // Reduced from 10
-
           /// Property Name
           Text(
             "GJKedia Signature Towers",
@@ -296,7 +301,6 @@ class _TeleCallerState extends State<TeleCaller> {
           ),
 
           const SizedBox(height: 10), // Reduced from 16
-
           /// Interested Badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -315,7 +319,6 @@ class _TeleCallerState extends State<TeleCaller> {
           ),
 
           const SizedBox(height: 12), // Reduced from 20
-
           /// Info Box (Grey)
           Container(
             padding: const EdgeInsets.all(10), // Reduced from 16
@@ -329,11 +332,21 @@ class _TeleCallerState extends State<TeleCaller> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Last Call",
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+                      Text(
+                        "Last Call",
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 11,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      const Text("2 hours ago",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      const Text(
+                        "2 hours ago",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -341,11 +354,21 @@ class _TeleCallerState extends State<TeleCaller> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Next Follow-up",
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+                      Text(
+                        "Next Follow-up",
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 11,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      const Text("Today, 4:00 PM",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      const Text(
+                        "Today, 4:00 PM",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -354,19 +377,29 @@ class _TeleCallerState extends State<TeleCaller> {
           ),
 
           const SizedBox(height: 12), // Reduced from 20
-
           /// Action Buttons
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.mode_comment_outlined, size: 16, color: Colors.black),
-                  label: const Text("Note", style: TextStyle(color: Colors.black, fontSize: 14)),
+                  icon: const Icon(
+                    Icons.mode_comment_outlined,
+                    size: 16,
+                    color: Colors.black,
+                  ),
+                  label: const Text(
+                    "Note",
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10), // Reduced
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                    ), // Reduced
                     side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -374,13 +407,24 @@ class _TeleCallerState extends State<TeleCaller> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.phone_outlined, size: 16, color: Colors.white),
-                  label: const Text("Call Now", style: TextStyle(color: Colors.white, fontSize: 14)),
+                  icon: const Icon(
+                    Icons.phone_outlined,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    "Call Now",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF001A5E),
-                    padding: const EdgeInsets.symmetric(vertical: 10), // Reduced
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                    ), // Reduced
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),

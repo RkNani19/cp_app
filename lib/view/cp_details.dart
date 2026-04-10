@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CpDetails extends StatefulWidget {
@@ -40,36 +41,46 @@ class _CpDetailsState extends State<CpDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Channel Partner Details",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen(title: "")),
+          (route) => false,
+        );
+        return false;
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Channel Partner Details",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          profileCard(userName, cpId),
+            profileCard(userName, cpId),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          contactCard(mobile, email, address),
+            contactCard(mobile, email, address),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          bankCard(),
+            bankCard(),
 
-          const SizedBox(height: 30),
+            const SizedBox(height: 30),
 
-          kycCard(pan, aadhar),
+            kycCard(pan, aadhar),
 
-          const SizedBox(height: 30),
+            const SizedBox(height: 30),
 
-          editButton(),
-        ],
+            editButton(),
+          ],
+        ),
       ),
     );
   }

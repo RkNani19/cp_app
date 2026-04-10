@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 
 class CpLoginScreen extends StatefulWidget {
   const CpLoginScreen({super.key, required this.title});
@@ -12,8 +13,15 @@ class CpLoginScreen extends StatefulWidget {
 class _CpLoginScreenState extends State<CpLoginScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return WillPopScope(onWillPop:() async{
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardScreen(title: ""),),
+      (route) => false,
+      );
+      return false;
+    },
+    child:  Center(
       child: Text("CP Login Screen"),
+    )
     );
   }
 }
