@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/model/call_list_model.dart';
+import 'package:gjk_cp/model/tele_source_model.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
+import 'package:gjk_cp/viewmodel/call_list_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/tele_source_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/tell_call_viewmodel.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TeleCaller extends StatefulWidget {
   final String title;
@@ -8,9 +16,79 @@ class TeleCaller extends StatefulWidget {
 
   @override
   State<TeleCaller> createState() => _TeleCallerState();
+
+ 
 }
 
 class _TeleCallerState extends State<TeleCaller> {
+  List<TeleSourceModel> sourceList = [];
+  int selectedIndex = 0;
+  bool isLoading = true;
+
+  List<CallListModel> callList = [];
+  bool isCallLoading = true;
+  int selectedSourceId = 0;
+
+Future<void> makeDirectCall(String phoneNumber) async {
+  final status = await Permission.phone.request();
+
+  if (status.isGranted) {
+    final Uri url = Uri.parse("tel:$phoneNumber");
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    }
+  } else {
+    print("Permission denied");
+  }
+}
+
+  // Future<void> fetchSourceTypes() async {
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   final cpId = prefs.getInt("cpId") ?? 0;
+
+  //   print("CP ID: $cpId");
+
+  //   final uri =
+  //       "${AppConfig.baseUrl}/mobileapp/sourcetypescptele?assigned_to=$cpId";
+
+  //   final response = await http.get(Uri.parse(uri));
+
+  //   print("Telecaller source API: $uri");
+  //   // final response = await http.get(
+  //   //   Uri.parse(
+  //   //     "https://gjk.tranquilcrmone.in/mobileapp/sourcetypescptele?assigned_to=$",
+  //   //   ),
+  //   // );
+
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+
+  //     setState(() {
+  //       sourceList = (data as List)
+  //           .map((e) => TeleSourceModel.fromJson(e))
+  //           .toList();
+
+  //       // 👉 Optional: Add "All" manually on top
+  //       sourceList.insert(0, TeleSourceModel(id: "0", name: "All", count: "0"));
+
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    //fetchSourceTypes();
+    Future.microtask(() {
+      context.read<CallListViewmodel>().fetchCalls(sourceId: 0);
+      context.read<TellCallViewmodel>().fetchData();
+      context.read<TeleSourceViewModel>().fetchSourceTypes();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double itemAspectRatio = 1.05;
@@ -46,48 +124,62 @@ class _TeleCallerState extends State<TeleCaller> {
 
                   const SizedBox(height: 20),
 
-                  /// Dashboard Cards
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true, // ✅ IMPORTANT
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                    childAspectRatio: itemAspectRatio,
-                    children: [
-                      _buildStatCard(
-                        icon: Icons.phone_outlined,
-                        iconColor: const Color(0xFF1A237E),
-                        bgColor: const Color(0xFFE8EAF6),
-                        value: "47",
-                        label: "Calls Today",
-                        valueColor: const Color(0xFF1A237E),
-                      ),
-                      _buildStatCard(
-                        icon: Icons.people_outline,
-                        iconColor: const Color(0xFFB8860B),
-                        bgColor: const Color(0xFFFFF9E6),
-                        value: "12",
-                        label: "Interested",
-                        valueColor: const Color(0xFFB8860B),
-                      ),
-                      _buildStatCard(
-                        icon: Icons.trending_up,
-                        iconColor: const Color(0xFF2E7D32),
-                        bgColor: const Color(0xFFE8F5E9),
-                        value: "8",
-                        label: "Site Visits",
-                        valueColor: const Color(0xFF2E7D32),
-                      ),
-                      _buildStatCard(
-                        icon: Icons.calendar_today_outlined,
-                        iconColor: const Color(0xFFF9A825),
-                        bgColor: const Color(0xFFFFFDE7),
-                        value: "15",
-                        label: "Follow-ups Due",
-                        valueColor: const Color(0xFFF9A825),
-                      ),
-                    ],
+                  Consumer<TellCallViewmodel>(
+                    builder: (context, vm, child) {
+                      if (vm.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (vm.calldata == null) {
+                        return const Text("No Data");
+                      }
+
+                      final data = vm.calldata!;
+
+                      /// Dashboard Cards
+                      return GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true, // ✅ IMPORTANT
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                        childAspectRatio: itemAspectRatio,
+                        children: [
+                          _buildStatCard(
+                            icon: Icons.phone_outlined,
+                            iconColor: const Color(0xFF1A237E),
+                            bgColor: const Color(0xFFE8EAF6),
+                            value: data.totalData,
+                            label: "Calls Today",
+                            valueColor: const Color(0xFF1A237E),
+                          ),
+                          _buildStatCard(
+                            icon: Icons.people_outline,
+                            iconColor: const Color(0xFFB8860B),
+                            bgColor: const Color(0xFFFFF9E6),
+                            value: data.todaysCalls,
+                            label: "Interested",
+                            valueColor: const Color(0xFFB8860B),
+                          ),
+                          _buildStatCard(
+                            icon: Icons.trending_up,
+                            iconColor: const Color(0xFF2E7D32),
+                            bgColor: const Color(0xFFE8F5E9),
+                            value: data.montCalls,
+                            label: "Site Visits",
+                            valueColor: const Color(0xFF2E7D32),
+                          ),
+                          _buildStatCard(
+                            icon: Icons.calendar_today_outlined,
+                            iconColor: const Color(0xFFF9A825),
+                            bgColor: const Color(0xFFFFFDE7),
+                            value: data.totalCalls,
+                            label: "Follow-ups Due",
+                            valueColor: const Color(0xFFF9A825),
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 20),
@@ -145,8 +237,8 @@ class _TeleCallerState extends State<TeleCaller> {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            "Calls Today",
+          Text(
+            label,
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF6B7280),
@@ -191,18 +283,74 @@ class _TeleCallerState extends State<TeleCaller> {
         const SizedBox(height: 14),
 
         /// Chips
-        Row(
-          children: [
-            _buildChip("All", true),
-            _buildChip("High Priority", false),
-            _buildChip("Medium Priority", false),
-          ],
-        ),
+        Consumer<TeleSourceViewModel>(
+  builder: (context, vm, child) {
+    if (vm.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (vm.sourceList.isEmpty) {
+      return const Text("No Data");
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(vm.sourceList.length, (index) {
+          final item = vm.sourceList[index];
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+
+              final sourceId = int.parse(item.id);
+
+              context.read<CallListViewmodel>().fetchCalls(
+                sourceId: sourceId,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _buildChip(item.name, selectedIndex == index),
+            ),
+          );
+        }),
+      ),
+    );
+  },
+),
 
         const SizedBox(height: 16),
 
         /// Card
-        _buildCallCard(),
+        /// Call List (Dynamic)
+        Consumer<CallListViewmodel>(
+          builder: (context, vm, child) {
+            if (vm.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (vm.callList.isEmpty) {
+              return const Text("No Data");
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: vm.callList.length,
+              itemBuilder: (context, index) {
+                final data = vm.callList[index];
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildCallCard(data),
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }
@@ -229,7 +377,7 @@ class _TeleCallerState extends State<TeleCaller> {
     );
   }
 
-  Widget _buildCallCard() {
+  Widget _buildCallCard(CallListModel data) {
     return Container(
       padding: const EdgeInsets.all(12), // Reduced from 20
       decoration: BoxDecoration(
@@ -244,8 +392,8 @@ class _TeleCallerState extends State<TeleCaller> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Amit Sharma",
+              Text(
+                data.leadName,
                 style: TextStyle(
                   fontSize: 18, // Reduced from 22
                   fontWeight: FontWeight.bold,
@@ -280,7 +428,7 @@ class _TeleCallerState extends State<TeleCaller> {
               Icon(Icons.phone_outlined, size: 14, color: Colors.grey.shade600),
               const SizedBox(width: 6),
               Text(
-                "+91 98765 11111",
+                "+91 ${data.leadMobile}",
                 style: TextStyle(
                   fontSize: 13, // Reduced from 16
                   color: Colors.grey.shade600,
@@ -340,8 +488,9 @@ class _TeleCallerState extends State<TeleCaller> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
-                        "2 hours ago",
+                      Text(
+                        //"2 hours ago",
+                        data.updatedTime,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -362,8 +511,9 @@ class _TeleCallerState extends State<TeleCaller> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
-                        "Today, 4:00 PM",
+                      Text(
+                        // "Today, 4:00 PM",
+                        data.createdIn,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -406,7 +556,9 @@ class _TeleCallerState extends State<TeleCaller> {
               const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                      makeDirectCall(data.leadMobile);
+                  },
                   icon: const Icon(
                     Icons.phone_outlined,
                     size: 16,

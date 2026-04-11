@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
+import 'package:gjk_cp/viewmodel/cp_dashboard_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CpLoginScreen extends StatefulWidget {
   const CpLoginScreen({super.key, required this.title});
@@ -11,6 +14,35 @@ class CpLoginScreen extends StatefulWidget {
 }
 
 class _CpLoginScreenState extends State<CpLoginScreen> {
+  // 🔥 USER DATA
+  String cpName = "";
+  String cpMobile = "";
+  String cpId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadCpData();
+
+    Future.microtask(() {
+      context.read<CpDashboardViewModel>().fetchDashboard();
+    });
+  }
+
+  // 🔥 LOAD FROM SHARED PREFERENCES
+  Future<void> loadCpData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      cpName = prefs.getString("userName") ?? "";
+      cpMobile = prefs.getString("mobile") ?? "";
+      cpId = (prefs.getInt("cpId") ?? 0).toString();
+    });
+
+    debugPrint("👤 cpName: $cpName");
+    debugPrint("📱 cpMobile: $cpMobile");
+    debugPrint("🆔 cpId: $cpId");
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -25,7 +57,7 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
       child: Scaffold(
         backgroundColor: Colors.grey[200],
 
-        /// ✅ SCROLL FIX ADDED HERE
+        /// ✅ SCROLL FIX
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -45,19 +77,41 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
                   ),
 
                   const SizedBox(height: 16),
+                  Consumer<CpDashboardViewModel>(
+                    builder: (context, vm, child) {
+                      if (vm.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                  /// 🔷 DASHBOARD CARDS
-                  dashboardCard("Total Sales", "₹45.2 Cr", "12 units sold"),
-                  const SizedBox(height: 16),
+                      if (vm.dashboard == null) {
+                        return const Text("No Data");
+                      }
 
-                  dashboardCard(
-                    "Commission Earned",
-                    "₹2.26 Lakhs",
-                    "This month",
+                      final data = vm.dashboard!;
+
+                      return Column(
+                        children: [
+                          /// 🔷 DASHBOARD CARDS
+                          dashboardCard(
+                            "Total Sales",
+                           data.totalSalesAmount,
+                            "${data.unitsSold} units sold",
+                          ),
+                          const SizedBox(height: 16),
+
+                          dashboardCard(
+                            "Commission Earned",
+                           // "₹2.26 Lakhs",
+                            data.monthCommission,
+                            "This month",
+                          ),
+                          const SizedBox(height: 16),
+
+                          dashboardCard("Active Leads", data.activeLeads, "In pipeline"),
+                        ],
+                      );
+                    },
                   ),
-                  const SizedBox(height: 16),
-
-                  dashboardCard("Active Leads", "24", "In pipeline"),
 
                   const SizedBox(height: 24),
 
@@ -112,10 +166,10 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
               color: Colors.amber[700],
               shape: BoxShape.circle,
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                "CP",
-                style: TextStyle(
+                cpName.isNotEmpty ? cpName[0].toUpperCase() : "CP",
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -126,22 +180,28 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
 
           const SizedBox(width: 16),
 
-          /// Details
+          /// 🔥 DYNAMIC DETAILS FROM SHARED PREFERENCES
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                "Rajesh Kumar",
-                style: TextStyle(
+                cpName.isNotEmpty ? cpName : "Guest User",
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4),
-              Text("+91 98765 43210", style: TextStyle(color: Colors.white70)),
-              SizedBox(height: 4),
-              Text("ID: CP2024001", style: TextStyle(color: Colors.white70)),
+              const SizedBox(height: 4),
+              Text(
+                cpMobile.isNotEmpty ? cpMobile : "No Mobile",
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "ID: CP$cpId",
+                style: const TextStyle(color: Colors.white70),
+              ),
             ],
           ),
         ],
