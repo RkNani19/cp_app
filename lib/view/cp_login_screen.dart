@@ -13,15 +13,228 @@ class CpLoginScreen extends StatefulWidget {
 class _CpLoginScreenState extends State<CpLoginScreen> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(onWillPop:() async{
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardScreen(title: ""),),
-      (route) => false,
-      );
-      return false;
-    },
-    child:  Center(
-      child: Text("CP Login Screen"),
-    )
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen(title: "")),
+          (route) => false,
+        );
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[200],
+
+        /// ✅ SCROLL FIX ADDED HERE
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 🔷 PROFILE CARD
+                  profileCard(),
+
+                  const SizedBox(height: 24),
+
+                  /// 🔷 TITLE
+                  const Text(
+                    "Performance Overview",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  /// 🔷 DASHBOARD CARDS
+                  dashboardCard("Total Sales", "₹45.2 Cr", "12 units sold"),
+                  const SizedBox(height: 16),
+
+                  dashboardCard(
+                    "Commission Earned",
+                    "₹2.26 Lakhs",
+                    "This month",
+                  ),
+                  const SizedBox(height: 16),
+
+                  dashboardCard("Active Leads", "24", "In pipeline"),
+
+                  const SizedBox(height: 24),
+
+                  /// 🔷 QUICK ACTIONS
+                  const Text(
+                    "Quick Actions",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 1,
+                    children: [
+                      quickActionItem(Icons.person_add_alt_1, "Add Customer"),
+                      quickActionItem(Icons.history, "Sales History"),
+                      quickActionItem(Icons.image_outlined, "Creatives"),
+                      quickActionItem(Icons.share_outlined, "Share App"),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 🔷 PROFILE CARD
+  Widget profileCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1B6F),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          /// Avatar
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.amber[700],
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Text(
+                "CP",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          /// Details
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                "Rajesh Kumar",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text("+91 98765 43210", style: TextStyle(color: Colors.white70)),
+              SizedBox(height: 4),
+              Text("ID: CP2024001", style: TextStyle(color: Colors.white70)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🔷 REUSABLE DASHBOARD CARD
+  Widget dashboardCard(String title, String value, String subtitle) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1B6F),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          /// TEXT
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(subtitle, style: const TextStyle(color: Colors.white70)),
+            ],
+          ),
+
+          /// ARROW
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🔷 QUICK ACTION ITEM
+  Widget quickActionItem(IconData icon, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          /// ICON
+          Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: const Color(0xFF0D1B6F), size: 26),
+          ),
+
+          const SizedBox(height: 12),
+
+          /// TEXT
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+        ],
+      ),
     );
   }
 }
