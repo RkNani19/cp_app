@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:gjk_cp/viewmodel/callus_viewmodel.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class CallUs extends StatefulWidget {
@@ -12,12 +14,11 @@ class CallUs extends StatefulWidget {
 }
 
 class _CallUsState extends State<CallUs> {
- @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  Provider.of<CallusViewmodel>(context, listen: false)
-      .fetchOfficeDetails();
-}
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<CallusViewmodel>(context, listen: false).fetchOfficeDetails();
+  }
 
   /// 🔥 Reusable Contact Card
   Widget contactCard({
@@ -33,7 +34,7 @@ void didChangeDependencies() {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05), // soft shadow
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -42,64 +43,26 @@ void didChangeDependencies() {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Title + Tag
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2F4F7),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  tag,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF3A5BA0),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
+            children: [Text(title), Text(tag)],
           ),
 
           const SizedBox(height: 8),
 
-          /// Phone Number
-          Text(
-            phone,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Color(0xFFC8A573),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(phone),
 
           const SizedBox(height: 14),
 
-          /// Call Button
           SizedBox(
             width: double.infinity,
             height: 46,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                makeDirectCall(phone); // 🔥 THIS IS THE FIX
+              },
               icon: const Icon(Icons.call, size: 18),
-              label: const Text(
-                "Call Now",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              ),
+              label: const Text("Call Now"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF021148),
                 foregroundColor: Colors.white,
@@ -109,11 +72,13 @@ void didChangeDependencies() {
                 ),
               ),
             ),
+            
           ),
         ],
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -224,8 +189,8 @@ void didChangeDependencies() {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                   // "GJKedia Homes, 123 Business Tower, Bandra Kurla Complex, Mumbai - 400051",
-                                   office.address,
+                                    // "GJKedia Homes, 123 Business Tower, Bandra Kurla Complex, Mumbai - 400051",
+                                    office.address,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 13,
@@ -240,11 +205,11 @@ void didChangeDependencies() {
 
                             /// Email
                             Row(
-                              children:  [
+                              children: [
                                 Icon(Icons.mail_outline, color: Colors.white70),
                                 SizedBox(width: 10),
                                 Text(
-                                 // "info@gjkediahomes.com",
+                                  // "info@gjkediahomes.com",
                                   office.email,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -263,8 +228,8 @@ void didChangeDependencies() {
                                 Icon(Icons.access_time, color: Colors.white70),
                                 SizedBox(width: 10),
                                 Text(
-                                 // "Mon - Sat: 10:00 AM - 7:00 PM",
-                                 office.timing,
+                                  // "Mon - Sat: 10:00 AM - 7:00 PM",
+                                  office.timing,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 13,
@@ -285,5 +250,21 @@ void didChangeDependencies() {
         ),
       ),
     );
+  }
+
+  Future<void> makeDirectCall(String number) async {
+    if (number.isEmpty) return;
+
+    // 🔥 Ask Permission
+    PermissionStatus status = await Permission.phone.request();
+
+    if (status.isGranted) {
+      bool? res = await FlutterPhoneDirectCaller.callNumber(number);
+      print("Calling: $number, Result: $res");
+    } else if (status.isDenied) {
+      print("Permission Denied");
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+    }
   }
 }
