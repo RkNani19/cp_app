@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gjk_cp/model/call_list_model.dart';
 import 'package:gjk_cp/model/tele_source_model.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
@@ -7,7 +6,6 @@ import 'package:gjk_cp/viewmodel/call_action_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/call_list_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tele_source_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tell_call_viewmodel.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class TeleCaller extends StatefulWidget {
@@ -29,19 +27,6 @@ class _TeleCallerState extends State<TeleCaller> {
   List<CallListModel> callList = [];
   bool isCallLoading = true;
   int selectedSourceId = 0;
-
-// Future<void> makeDirectCall(String phoneNumber) async {
-//   final status = await Permission.phone.request();
-
-//   if (status.isGranted) {
-//     bool? res = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
-
-//     print("CALL STATUS: $res");
-//   } else {
-//     print("Permission denied");
-//   }
-// }
-
 
 
   @override

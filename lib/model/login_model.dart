@@ -8,6 +8,9 @@ class LoginModel {
   final String agentAddress;
   final String panCard;
   final String aadharNumber;
+  final String bankName;
+  final String accountNumber;
+  final String ifsc;
 
   LoginModel({
     required this.cpId,
@@ -19,6 +22,9 @@ class LoginModel {
     required this.agentAddress,
     required this.panCard,
     required this.aadharNumber,
+    required this.bankName,
+    required this.accountNumber,
+    required this.ifsc,
   });
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +39,9 @@ class LoginModel {
       agentAddress: json['agent_address']?.toString() ?? '',
       panCard: json['pan_card']?.toString() ?? '',
       aadharNumber: json['aadhar_number']?.toString() ?? '',
+      bankName: json['bank_name']?.toString() ?? '',
+      accountNumber: json["account_number"]?.toString() ?? "",
+      ifsc: json["ifsc_code"]?.toString() ?? "",
     );
   }
 }

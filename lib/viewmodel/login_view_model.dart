@@ -35,6 +35,9 @@ class LoginViewModel extends ChangeNotifier {
       await prefs.setString("agentAddress", user!.agentAddress);
       await prefs.setString("panCard", user!.panCard);
       await prefs.setString("aadharNumber", user!.aadharNumber);
+      await prefs.setString("bankName", user!.bankName);
+      await prefs.setString("accountNumber", user!.accountNumber);
+      await prefs.setString("ifsc", user!.ifsc);
 
       return true;
     } else {

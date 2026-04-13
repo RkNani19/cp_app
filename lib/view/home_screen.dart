@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/model/banner_model.dart';
 import 'package:gjk_cp/model/fetch_project_model.dart';
+import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -488,7 +489,18 @@ class QuickActionsGrid extends StatelessWidget {
       ),
       itemCount: actions.length,
       itemBuilder: (context, index) {
-        return Container(
+       return GestureDetector(
+    onTap: () {
+      if (actions[index]["label"] == "Add Customer") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AddCustomer(title: '',),
+          ),
+        );
+      }
+    },
+    child: Container(
           decoration: BoxDecoration(
             color: QuickActionColors.cardBg,
             borderRadius: BorderRadius.circular(16),
@@ -533,7 +545,8 @@ class QuickActionsGrid extends StatelessWidget {
               ),
             ],
           ),
-        );
+        )
+       );
       },
     );
   }

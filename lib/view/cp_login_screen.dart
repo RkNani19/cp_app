@@ -131,7 +131,7 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
                     crossAxisSpacing: 16,
                     childAspectRatio: 1,
                     children: [
-                      quickActionItem(Icons.person_add_alt_1, "Add Customer"),
+                      quickActionItem(Icons.person_add_alt_1, "Add Customer" ),
                       quickActionItem(Icons.history, "Sales History"),
                       quickActionItem(Icons.image_outlined, "Creatives"),
                       quickActionItem(Icons.share_outlined, "Share App"),

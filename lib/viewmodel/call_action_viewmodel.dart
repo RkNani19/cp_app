@@ -9,9 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 class CallActionViewModel extends ChangeNotifier {
   bool isCalling = false;
 
-
-  
-
 Future<void> makeCallAndLog(CallListModel data) async {
   isCalling = true;
   notifyListeners();
@@ -24,7 +21,7 @@ Future<void> makeCallAndLog(CallListModel data) async {
     await _insertCallLog(data);
 
   } catch (e) {
-    print("ERROR: $e");
+    debugPrint("ERROR: $e");
   }
 
   isCalling = false;
@@ -37,14 +34,14 @@ Future<void> _makeDirectCall(String phoneNumber) async {
 
   final status = await Permission.phone.request();
 
-  print("PERMISSION: $status");
+  debugPrint("PERMISSION: $status");
 
   if (status.isGranted) {
     bool? res = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
 
-    print("CALL RESULT: $res"); // 🔥 IMPORTANT
+    debugPrint("CALL RESULT: $res"); // 🔥 IMPORTANT
   } else {
-    print("Permission denied");
+    debugPrint("Permission denied");
   }
 }
 
@@ -67,13 +64,13 @@ Future<void> _insertCallLog(CallListModel data) async {
       "&country_code=91"
       "&duration=0";
 
-  print("API: $url");
+  debugPrint("call API: $url");
 
   try {
     final response = await http.get(Uri.parse(url));
-    print("API RESPONSE: ${response.body}");
+    debugPrint("API RESPONSE: ${response.body}");
   } catch (e) {
-    print("API ERROR: $e");
+    debugPrint("API ERROR: $e");
   }
 }
 

@@ -18,6 +18,10 @@ class _CpDetailsState extends State<CpDetails> {
   String pan = "";
   String aadhar = "";
   String cpId = "";
+  String bankName = "";
+  String accountNumber = "";
+  String ifsc = "";
+  // bool isBankLoading = true;
 
   @override
   void initState() {
@@ -36,6 +40,9 @@ class _CpDetailsState extends State<CpDetails> {
       pan = prefs.getString("panCard") ?? "No PAN";
       aadhar = prefs.getString("aadharNumber") ?? "No Aadhar";
       cpId = prefs.getInt("cpId")?.toString() ?? "No ID";
+      bankName = prefs.getString("bankName") ?? "No bank";
+      accountNumber = prefs.getString("accountNumber") ?? "No Account Number";
+      ifsc = prefs.getString("ifsc") ?? "NO ifsc";
     });
   }
 
@@ -70,7 +77,7 @@ class _CpDetailsState extends State<CpDetails> {
 
             const SizedBox(height: 20),
 
-            bankCard(),
+            bankCard(bankName, accountNumber, ifsc),
 
             const SizedBox(height: 30),
 
@@ -209,7 +216,7 @@ Widget contactCard(String mobile, String email, String address) {
   );
 }
 
-Widget bankCard() {
+Widget bankCard(String bankName, String accountNumber , String ifsc) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(18),
@@ -234,17 +241,17 @@ Widget bankCard() {
         const SizedBox(height: 18),
 
         // ===== BANK NAME =====
-        bankItem("Bank Name", "HDFC Bank"),
+        bankItem("Bank Name", bankName),
 
         const SizedBox(height: 16),
 
         // ===== ACCOUNT NUMBER =====
-        bankItem("Account Number", "XXXX XXXX XX12 3456"),
+        bankItem("Account Number", accountNumber),
 
         const SizedBox(height: 16),
 
         // ===== IFSC =====
-        bankItem("IFSC Code", "HDFC0001234"),
+        bankItem("IFSC Code", ifsc),
       ],
     ),
   );
