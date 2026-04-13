@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:gjk_cp/viewmodel/cp_dashboard_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -94,20 +95,24 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
                           /// 🔷 DASHBOARD CARDS
                           dashboardCard(
                             "Total Sales",
-                           data.totalSalesAmount,
+                            data.totalSalesAmount,
                             "${data.unitsSold} units sold",
                           ),
                           const SizedBox(height: 16),
 
                           dashboardCard(
                             "Commission Earned",
-                           // "₹2.26 Lakhs",
+                            // "₹2.26 Lakhs",
                             data.monthCommission,
                             "This month",
                           ),
                           const SizedBox(height: 16),
 
-                          dashboardCard("Active Leads", data.activeLeads, "In pipeline"),
+                          dashboardCard(
+                            "Active Leads",
+                            data.activeLeads,
+                            "In pipeline",
+                          ),
                         ],
                       );
                     },
@@ -131,7 +136,17 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
                     crossAxisSpacing: 16,
                     childAspectRatio: 1,
                     children: [
-                      quickActionItem(Icons.person_add_alt_1, "Add Customer" ),
+                      quickActionItem(Icons.person_add_alt_1, "Add Customer",  onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AddCustomer(title: '',),
+          ),
+        );
+      },
+                      ),
+                      
+                      
                       quickActionItem(Icons.history, "Sales History"),
                       quickActionItem(Icons.image_outlined, "Creatives"),
                       quickActionItem(Icons.share_outlined, "Share App"),
@@ -262,38 +277,41 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
   }
 
   /// 🔷 QUICK ACTION ITEM
-  Widget quickActionItem(IconData icon, String title) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          /// ICON
-          Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              shape: BoxShape.circle,
+  Widget quickActionItem(IconData icon, String title,{VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(icon, color: const Color(0xFF0D1B6F), size: 26),
-          ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            /// ICON
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: const Color(0xFF0D1B6F), size: 26),
+            ),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          /// TEXT
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-        ],
+            /// TEXT
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+          ],
+        ),
       ),
     );
   }
