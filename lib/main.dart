@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/splash_screen.dart';
 import 'package:gjk_cp/view/tele_caller.dart';
 import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/call_action_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/call_list_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/cp_dashboard_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
@@ -32,6 +33,7 @@ void main() {
           child: TeleCaller(title: ""),
         ),
         ChangeNotifierProvider(create: (_) => CpDashboardViewModel()),
+          ChangeNotifierProvider(create: (_) => CallActionViewModel()),
       ],
       child: MyApp(),
     ),

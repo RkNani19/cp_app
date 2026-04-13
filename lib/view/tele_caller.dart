@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gjk_cp/model/call_list_model.dart';
 import 'package:gjk_cp/model/tele_source_model.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
+import 'package:gjk_cp/viewmodel/call_action_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/call_list_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tele_source_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tell_call_viewmodel.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TeleCaller extends StatefulWidget {
   final String title;
@@ -29,54 +30,19 @@ class _TeleCallerState extends State<TeleCaller> {
   bool isCallLoading = true;
   int selectedSourceId = 0;
 
-Future<void> makeDirectCall(String phoneNumber) async {
-  final status = await Permission.phone.request();
+// Future<void> makeDirectCall(String phoneNumber) async {
+//   final status = await Permission.phone.request();
 
-  if (status.isGranted) {
-    final Uri url = Uri.parse("tel:$phoneNumber");
+//   if (status.isGranted) {
+//     bool? res = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    }
-  } else {
-    print("Permission denied");
-  }
-}
+//     print("CALL STATUS: $res");
+//   } else {
+//     print("Permission denied");
+//   }
+// }
 
-  // Future<void> fetchSourceTypes() async {
-  //   final prefs = await SharedPreferences.getInstance();
 
-  //   final cpId = prefs.getInt("cpId") ?? 0;
-
-  //   print("CP ID: $cpId");
-
-  //   final uri =
-  //       "${AppConfig.baseUrl}/mobileapp/sourcetypescptele?assigned_to=$cpId";
-
-  //   final response = await http.get(Uri.parse(uri));
-
-  //   print("Telecaller source API: $uri");
-  //   // final response = await http.get(
-  //   //   Uri.parse(
-  //   //     "https://gjk.tranquilcrmone.in/mobileapp/sourcetypescptele?assigned_to=$",
-  //   //   ),
-  //   // );
-
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-
-  //     setState(() {
-  //       sourceList = (data as List)
-  //           .map((e) => TeleSourceModel.fromJson(e))
-  //           .toList();
-
-  //       // 👉 Optional: Add "All" manually on top
-  //       sourceList.insert(0, TeleSourceModel(id: "0", name: "All", count: "0"));
-
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 
   @override
   void initState() {
@@ -557,7 +523,7 @@ Future<void> makeDirectCall(String phoneNumber) async {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                      makeDirectCall(data.leadMobile);
+                     context.read<CallActionViewModel>().makeCallAndLog(data);
                   },
                   icon: const Icon(
                     Icons.phone_outlined,
