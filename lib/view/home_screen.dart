@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gjk_cp/model/banner_model.dart';
 import 'package:gjk_cp/model/fetch_project_model.dart';
 import 'package:gjk_cp/view/add_customer.dart';
+import 'package:gjk_cp/view/create_associate.dart';
+import 'package:gjk_cp/view/creatives.dart';
+import 'package:gjk_cp/view/customer.dart';
+import 'package:gjk_cp/view/sale_history.dart';
+import 'package:gjk_cp/view/share.dart';
 import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -135,8 +140,8 @@ class HeroBanner extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-         // color: AppColors.white.withOpacity(0.10),
-           border: Border.all(color: AppColors.lightGrey, width: 1),
+          // color: AppColors.white.withOpacity(0.10),
+          border: Border.all(color: AppColors.lightGrey, width: 1),
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -489,64 +494,110 @@ class QuickActionsGrid extends StatelessWidget {
       ),
       itemCount: actions.length,
       itemBuilder: (context, index) {
-       return GestureDetector(
-    onTap: () {
-      if (actions[index]["label"] == "Add Customer") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AddCustomer(title: '',),
+        return GestureDetector(
+          onTap: () {
+            final label = actions[index]["label"];
+
+            switch (label) {
+              case "Add Customer":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddCustomer(title: ''),
+                  ),
+                );
+                break;
+
+              case "Sales History":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SalesHistory(),
+                  ),
+                );
+                break;
+
+              case "My Customers":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Customer(),
+                  ),
+                );
+                break;
+
+              case "Create Associate":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateAssociateScreen(),
+                  ),
+                );
+                break;
+
+              case "Creatives":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreativesScreen(),
+                  ),
+                );
+                break;
+
+              case "Share":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Share(title: '')),
+                );
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: QuickActionColors.cardBg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: QuickActionColors.border),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ===== ICON CIRCLE =====
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    color: const Color(0xFFF4EDE0),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    actions[index]["icon"] as IconData,
+                    color: QuickActionColors.iconColor,
+                    size: 22,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // ===== TEXT =====
+                Text(
+                  actions[index]["label"] as String,
+                  style: const TextStyle(
+                    color: QuickActionColors.text,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         );
-      }
-    },
-    child: Container(
-          decoration: BoxDecoration(
-            color: QuickActionColors.cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: QuickActionColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // ===== ICON CIRCLE =====
-              Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: const Color(0xFFF4EDE0),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  actions[index]["icon"] as IconData,
-                  color: QuickActionColors.iconColor,
-                  size: 22,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // ===== TEXT =====
-              Text(
-                actions[index]["label"] as String,
-                style: const TextStyle(
-                  color: QuickActionColors.text,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        )
-       );
       },
     );
   }
