@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gjk_cp/model/customer_model.dart';
+import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/view/my_customer_details.dart';
 import 'package:gjk_cp/viewmodel/customer_activity_viewmodel.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -314,7 +315,13 @@ class CustomerCard extends StatelessWidget {
               /// Edit
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () { Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => AddCustomer(title: '',  customer: customer,),
+    ),
+  );
+},
                   icon: const Icon(Icons.edit, size: 18),
                   label: const Text("Edit"),
                   style: OutlinedButton.styleFrom(

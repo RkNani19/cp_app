@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/config/app_config.dart';
+import 'package:gjk_cp/model/customer_model.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,8 +25,9 @@ class ProjectModel {
 }
 
 class AddCustomer extends StatefulWidget {
-  const AddCustomer({super.key, required this.title});
+  const AddCustomer({super.key, required this.title, this.customer});
   final String title;
+   final CustomerModel? customer;
 
   @override
   State<AddCustomer> createState() => _AddCustomerState();
@@ -42,6 +44,8 @@ class _AddCustomerState extends State<AddCustomer> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
 
+  
+
   String cpId = "";
 
   @override
@@ -50,6 +54,12 @@ class _AddCustomerState extends State<AddCustomer> {
     // Fetch projects when the widget is first created.
     _fetchProjects();
     loadCpId();
+
+     if (widget.customer != null) {
+    nameController.text = widget.customer!.name;
+    mobileController.text = widget.customer!.mobile;
+    emailController.text = widget.customer!.email;
+  }
   }
 
 Future<void> loadCpId() async {
@@ -80,7 +90,18 @@ Future<void> loadCpId() async {
         setState(() {
           _projectList = data.map((e) => ProjectModel.fromJson(e)).toList();
           _isLoadingProjects = false;
-        });
+
+  // ✅ PREFILL PROJECT
+  // if (widget.customer != null) {
+  //   try {
+  //     _selectedProject = _projectList.firstWhere(
+  //       (p) => p.projectName == widget.customer!.project,
+  //     );
+  //   } catch (e) {
+  //     print("Project not matched");
+  //   }
+  // }
+});
       } else {
         setState(() => _isLoadingProjects = false);
       }
@@ -277,12 +298,13 @@ Future<void> loadCpId() async {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    createLead();
-                   
-                    // Handle submit action
-                    // You can now access the selected project ID: _selectedProject?.projectId
-                  },
+                 onPressed: () {
+  if (widget.customer == null) {
+    createLead(); // ✅ ADD
+  } else {
+    updateLead(); // ✅ EDIT
+  }
+},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -290,8 +312,8 @@ Future<void> loadCpId() async {
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  child: const Text(
-                    'Submit Lead',
+                  child:  Text(
+                    widget.customer == null ? 'Submit Lead' : 'Update Lead',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -411,4 +433,34 @@ Future<void> loadCpId() async {
       ),
     );
   }
+  
+Future<void> updateLead() async {
+  try {
+    final url = Uri.parse(
+      "${AppConfig.baseUrl}/mobileapp/updatecplead",
+    ).replace(queryParameters: {
+      "lead_id": widget.customer!.id, // 🔥 use correct field (s_no)
+      "fullname": nameController.text,
+      "mobile_number": mobileController.text,
+      "email": emailController.text,
+      "notes": notesController.text,
+      "cp_id": cpId,
+      "project_id": _selectedProject!.projectId,
+    });
+
+    print("UPDATE API: $url");
+
+    final response = await http.get(url);
+
+    print("UPDATE RESPONSE: ${response.body}");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Customer Updated ✅")),
+    );
+
+    Navigator.pop(context);
+  } catch (e) {
+    print("ERROR: $e");
+  }
+}
 }
