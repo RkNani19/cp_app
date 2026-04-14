@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gjk_cp/model/customer_model.dart';
 import 'package:gjk_cp/viewmodel/customer_activity_viewmodel.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class Customer extends StatefulWidget {
@@ -318,7 +320,10 @@ class CustomerCard extends StatelessWidget {
               /// Call
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    makeDirectCall(context, customer.mobile);
+                  },
+
                   icon: const Icon(
                     Icons.call,
                     color: Colors.white,
@@ -344,6 +349,18 @@ class CustomerCard extends StatelessWidget {
       ),
     );
   }
+  
+  Future<void> makeDirectCall(BuildContext context, String phone) async {
+  final status = await Permission.phone.request();
+
+  if (status.isGranted) {
+    await FlutterPhoneDirectCaller.callNumber(phone);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Call permission required")),
+    );
+  }
+}
 }
 
 /// 🔹 Filter Chip
