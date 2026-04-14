@@ -11,16 +11,35 @@ class Customer extends StatefulWidget {
 }
 
 class _CustomerState extends State<Customer> {
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-      Provider.of<CustomerActivityViewmodel>(
-        context,
-        listen: false,
-      ).fetchActivities();
-      
+      final vm = Provider.of<CustomerActivityViewmodel>(context, listen: false);
+
+      vm.fetchActivities();
+      vm.fetchCustomers("0"); // default load
+    });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100) {
+        final vm = Provider.of<CustomerActivityViewmodel>(
+          context,
+          listen: false,
+        );
+
+        vm.fetchCustomers(
+          vm.selectedActivity == "All"
+              ? "0"
+              : vm.activities
+                    .firstWhere((e) => e.name == vm.selectedActivity)
+                    .id,
+          isLoadMore: true,
+        );
+      }
     });
   }
 
@@ -81,8 +100,8 @@ class _CustomerState extends State<Customer> {
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
                           onTap: () {
-                          vm.selectActivity(activity.name);
-vm.fetchCustomers(activity.id); 
+                            vm.selectActivity(activity.name);
+                            vm.fetchCustomers(activity.id);
                           },
                           child: FilterChipUI(activity.name, isSelected),
                         ),
@@ -98,29 +117,37 @@ vm.fetchCustomers(activity.id);
 
           /// 🔽 List
           Expanded(
-  child: Consumer<CustomerActivityViewmodel>(
-    builder: (context, vm, child) {
+            child: Consumer<CustomerActivityViewmodel>(
+              builder: (context, vm, child) {
+                if (vm.isCustomerLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-      if (vm.isCustomerLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+                if (vm.customers.isEmpty) {
+                  return const Center(child: Text("No Customers"));
+                }
 
-      if (vm.customers.isEmpty) {
-        return const Center(child: Text("No Customers"));
-      }
-
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: vm.customers.length,
-        itemBuilder: (context, index) {
-          final customer = vm.customers[index];
-
-          return CustomerCard(customer: customer); // ✅ dynamic
-        },
-      );
-    },
-  ),
-)
+                return ListView.builder(
+                  controller: _scrollController, // ✅ IMPORTANT
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount:
+                      vm.customers.length +
+                      (vm.isLoadingMore ? 1 : 0), // loader at bottom
+                  itemBuilder: (context, index) {
+                    if (index < vm.customers.length) {
+                      final customer = vm.customers[index];
+                      return CustomerCard(customer: customer);
+                    } else {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -129,8 +156,8 @@ vm.fetchCustomers(activity.id);
 
 /// 🔹 Customer Card
 class CustomerCard extends StatelessWidget {
-   const CustomerCard({super.key, required this.customer});
-   final CustomerModel customer;
+  const CustomerCard({super.key, required this.customer});
+  final CustomerModel customer;
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +192,9 @@ class CustomerCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children:  [
+                  children: [
                     Text(
-                     customer.name,
+                      customer.name,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -180,7 +207,10 @@ class CustomerCard extends StatelessWidget {
                       children: [
                         Icon(Icons.call, size: 14, color: Colors.grey),
                         SizedBox(width: 4),
-                        Text("+91 ${customer.mobile}", style: TextStyle(fontSize: 13)),
+                        Text(
+                          "+91 ${customer.mobile}",
+                          style: TextStyle(fontSize: 13),
+                        ),
                       ],
                     ),
 
@@ -210,7 +240,7 @@ class CustomerCard extends StatelessWidget {
                   color: const Color(0xFFF5E8C7),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child:  Text(
+                child: Text(
                   customer.activity,
                   style: TextStyle(
                     fontSize: 12,
@@ -230,7 +260,7 @@ class CustomerCard extends StatelessWidget {
               Icon(Icons.location_on, size: 16, color: Colors.grey),
               SizedBox(width: 6),
               Text(
-               customer.project,
+                customer.project,
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
@@ -289,10 +319,18 @@ class CustomerCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.call),
-                  label: const Text("Call"),
+                  icon: const Icon(
+                    Icons.call,
+                    color: Colors.white,
+                  ), // ✅ icon white
+                  label: const Text(
+                    "Call",
+                    style: TextStyle(color: Colors.white), // ✅ text white
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0A2A6A),
+                    backgroundColor: const Color(0xFF0A2A6A), // ✅ button bg
+                    foregroundColor:
+                        Colors.white, // ✅ ensures text + icon white
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
