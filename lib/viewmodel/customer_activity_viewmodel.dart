@@ -16,37 +16,43 @@ bool isCustomerLoading = false;
   String selectedActivity = "All";
 
   Future<void> fetchActivities() async {
-    isLoading = true;
-    notifyListeners();
+  isLoading = true;
+  notifyListeners();
 
-    try {
-      final url = "${AppConfig.baseUrl}/mobileapp/activities?company_id=1";
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final companyId = prefs.getInt("companyId") ?? 1; // ✅ dynamic
 
-      print("Customer Activitiy url: $url");
+    final url =
+        "${AppConfig.baseUrl}/mobileapp/activities?company_id=$companyId";
 
-      final response = await http.get(Uri.parse(url));
+    print("Customer Activity URL 👉 $url");
 
-      print("ACTIVITY API 👉 ${response.body}");
+    final response = await http.get(Uri.parse(url));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+    print("ACTIVITY API 👉 ${response.body}");
 
-        activities = data
-            .map<CustomerActivityModel>(
-              (e) => CustomerActivityModel.fromJson(e),
-            )
-            .toList();
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-        // ✅ Add "All" manually at start
-        activities.insert(0, CustomerActivityModel(id: "0", name: "All"));
-      }
-    } catch (e) {
-      print("ERROR 👉 $e");
+      activities = data
+          .map<CustomerActivityModel>(
+              (e) => CustomerActivityModel.fromJson(e))
+          .toList();
+
+      // ✅ Add "All"
+      activities.insert(
+        0,
+        CustomerActivityModel(id: "0", name: "All"),
+      );
     }
-
-    isLoading = false;
-    notifyListeners();
+  } catch (e) {
+    print("ERROR 👉 $e");
   }
+
+  isLoading = false;
+  notifyListeners();
+}
 
   void selectActivity(String name) {
     selectedActivity = name;
@@ -74,11 +80,10 @@ bool isCustomerLoading = false;
 
     final data = json.decode(response.body);
 
-    activities  = data
+    // ✅ FIXED HERE
+    customers = data
         .map<CustomerModel>((e) => CustomerModel.fromJson(e))
         .toList();
-
-        
 
   } catch (e) {
     print("ERROR 👉 $e");
