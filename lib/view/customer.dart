@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/model/customer_model.dart';
+import 'package:gjk_cp/viewmodel/customer_activity_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class Customer extends StatelessWidget {
+class Customer extends StatefulWidget {
   const Customer({super.key});
+
+  @override
+  State<Customer> createState() => _CustomerState();
+}
+
+class _CustomerState extends State<Customer> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      Provider.of<CustomerActivityViewmodel>(
+        context,
+        listen: false,
+      ).fetchActivities();
+      
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,33 +43,54 @@ class Customer extends StatelessWidget {
               color: const Color(0xFFE6ECF5),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Center(
-              child: Text(
-                "4 Total",
-                style: TextStyle(
-                    color: Color(0xFF0A2A6A), fontWeight: FontWeight.w600),
-              ),
+            child: Consumer<CustomerActivityViewmodel>(
+              builder: (context, vm, child) {
+                return Center(
+                  child: Text(
+                    "${vm.activities.length} Total",
+                    style: const TextStyle(
+                      color: Color(0xFF0A2A6A),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              },
             ),
-          )
+          ),
         ],
       ),
 
       body: Column(
         children: [
-
           /// 🔘 Filter Tabs
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: const [
-                FilterChipUI("All", true),
-                SizedBox(width: 10),
-                FilterChipUI("New", false),
-                SizedBox(width: 10),
-                FilterChipUI("Contacted", false),
-                SizedBox(width: 10),
-                FilterChipUI("Site Visit", false),
-              ],
+            child: Consumer<CustomerActivityViewmodel>(
+              builder: (context, vm, child) {
+                if (vm.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: vm.activities.map((activity) {
+                      final isSelected = vm.selectedActivity == activity.name;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                          vm.selectActivity(activity.name);
+vm.fetchCustomers(activity.id); 
+                          },
+                          child: FilterChipUI(activity.name, isSelected),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -56,14 +98,29 @@ class Customer extends StatelessWidget {
 
           /// 🔽 List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return const CustomerCard();
-              },
-            ),
-          )
+  child: Consumer<CustomerActivityViewmodel>(
+    builder: (context, vm, child) {
+
+      if (vm.isCustomerLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (vm.customers.isEmpty) {
+        return const Center(child: Text("No Customers"));
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: vm.customers.length,
+        itemBuilder: (context, index) {
+          final customer = vm.customers[index];
+
+          return CustomerCard(customer: customer); // ✅ dynamic
+        },
+      );
+    },
+  ),
+)
         ],
       ),
     );
@@ -72,7 +129,8 @@ class Customer extends StatelessWidget {
 
 /// 🔹 Customer Card
 class CustomerCard extends StatelessWidget {
-  const CustomerCard({super.key});
+   const CustomerCard({super.key, required this.customer});
+   final CustomerModel customer;
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +145,9 @@ class CustomerCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           /// Top Row
           Row(
             children: [
-
               /// Avatar
               Container(
                 width: 55,
@@ -109,12 +165,13 @@ class CustomerCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-
+                  children:  [
                     Text(
-                      "Amit Sharma",
+                     customer.name,
                       style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
 
                     SizedBox(height: 4),
@@ -123,8 +180,7 @@ class CustomerCard extends StatelessWidget {
                       children: [
                         Icon(Icons.call, size: 14, color: Colors.grey),
                         SizedBox(width: 4),
-                        Text("+91 98765 11111",
-                            style: TextStyle(fontSize: 13)),
+                        Text("+91 ${customer.mobile}", style: TextStyle(fontSize: 13)),
                       ],
                     ),
 
@@ -134,8 +190,10 @@ class CustomerCard extends StatelessWidget {
                       children: [
                         Icon(Icons.email, size: 14, color: Colors.grey),
                         SizedBox(width: 4),
-                        Text("amit@example.com",
-                            style: TextStyle(fontSize: 13)),
+                        Text(
+                          customer.email.isEmpty ? "-" : customer.email,
+                          style: TextStyle(fontSize: 13),
+                        ),
                       ],
                     ),
                   ],
@@ -144,32 +202,35 @@ class CustomerCard extends StatelessWidget {
 
               /// Status
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5E8C7),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  "Site Visit",
+                child:  Text(
+                  customer.activity,
                   style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFFB0892F),
-                      fontWeight: FontWeight.w600),
+                    fontSize: 12,
+                    color: Color(0xFFB0892F),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              )
+              ),
             ],
           ),
 
           const SizedBox(height: 14),
 
           /// Location
-          const Row(
+          Row(
             children: [
               Icon(Icons.location_on, size: 16, color: Colors.grey),
               SizedBox(width: 6),
               Text(
-                "GJ Kedia Signature Towers",
+               customer.project,
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
@@ -178,14 +239,11 @@ class CustomerCard extends StatelessWidget {
           const SizedBox(height: 6),
 
           /// Date
-          const Row(
+          Row(
             children: [
               Icon(Icons.calendar_today, size: 14, color: Colors.grey),
               SizedBox(width: 6),
-              Text(
-                "Added on 28 Mar 2026",
-                style: TextStyle(fontSize: 12),
-              ),
+              Text("Added on ${customer.date}"),
             ],
           ),
 
@@ -210,7 +268,6 @@ class CustomerCard extends StatelessWidget {
           /// Buttons
           Row(
             children: [
-
               /// Edit
               Expanded(
                 child: OutlinedButton.icon(
@@ -244,7 +301,7 @@ class CustomerCard extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -266,17 +323,14 @@ class FilterChipUI extends StatelessWidget {
         color: selected ? const Color(0xFFF5E8C7) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: selected
-              ? const Color(0xFFB0892F)
-              : Colors.grey.shade300,
+          color: selected ? const Color(0xFFB0892F) : Colors.grey.shade300,
         ),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 13,
-          color:
-              selected ? const Color(0xFFB0892F) : Colors.black,
+          color: selected ? const Color(0xFFB0892F) : Colors.black,
           fontWeight: FontWeight.w500,
         ),
       ),

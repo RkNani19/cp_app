@@ -6,6 +6,7 @@ import 'package:gjk_cp/viewmodel/call_action_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/call_list_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/callus_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/cp_dashboard_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/customer_activity_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/login_view_model.dart';
 import 'package:gjk_cp/viewmodel/register_viewmodel.dart';
@@ -40,6 +41,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => CallusViewmodel()),
         ChangeNotifierProvider(create: (_) => VideoProjectsViewmodel()),
         ChangeNotifierProvider(create: (_) => VideoViewModel()),
+        ChangeNotifierProvider(create: (_) => CustomerActivityViewmodel()),
       ],
       child: MyApp(),
     ),
