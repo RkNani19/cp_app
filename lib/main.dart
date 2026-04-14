@@ -12,6 +12,7 @@ import 'package:gjk_cp/viewmodel/register_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tele_source_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/tell_call_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/video_projects_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/video_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -37,7 +38,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => CpDashboardViewModel()),
         ChangeNotifierProvider(create: (_) => CallActionViewModel()),
         ChangeNotifierProvider(create: (_) => CallusViewmodel()),
-         ChangeNotifierProvider(create: (_) => VideoProjectsViewmodel()),
+        ChangeNotifierProvider(create: (_) => VideoProjectsViewmodel()),
+        ChangeNotifierProvider(create: (_) => VideoViewModel()),
       ],
       child: MyApp(),
     ),

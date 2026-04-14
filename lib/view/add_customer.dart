@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/config/app_config.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectModel {
   final String projectId;
@@ -35,12 +37,32 @@ class _AddCustomerState extends State<AddCustomer> {
   ProjectModel? _selectedProject;
   bool _isLoadingProjects = true;
 
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController notesController = TextEditingController();
+
+  String cpId = "";
+
   @override
   void initState() {
     super.initState();
     // Fetch projects when the widget is first created.
     _fetchProjects();
+    loadCpId();
   }
+
+Future<void> loadCpId() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final storedCpId = prefs.getInt("cpId"); // ✅ correct key + type
+
+  setState(() {
+    cpId = storedCpId?.toString() ?? "";
+  });
+
+  print("CP ID LOADED: $cpId");
+}
 
   // --- API call to fetch the list of projects ---
   Future<void> _fetchProjects() async {
@@ -67,6 +89,119 @@ class _AddCustomerState extends State<AddCustomer> {
       setState(() => _isLoadingProjects = false);
     }
   }
+
+ Future<void> createLead() async {
+
+  /// 🔹 1. CHECK PROJECT
+  if (_selectedProject == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please select project")),
+    );
+    return;
+  }
+
+  /// 🔹 2. CHECK LOGIN (cpId)
+  if (cpId.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("User not logged in")),
+    );
+    return;
+  }
+
+  /// 🔹 3. VALIDATE INPUTS
+  if (nameController.text.isEmpty ||
+      mobileController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please fill required fields")),
+    );
+    return;
+  }
+
+  try {
+    /// 🔹 4. BUILD URL (SAFE ENCODE)
+    final url = Uri.parse(
+      "${AppConfig.baseUrl}/mobileapp/createcplead",
+    ).replace(queryParameters: {
+      "fullname": nameController.text,
+      "mobile_number": mobileController.text,
+      "email": emailController.text,
+      "notes": notesController.text,
+      "cp_id": cpId,
+      "project_id": _selectedProject!.projectId,
+      "country_code": "91",
+    });
+
+    print("ADD CUSTOMER API: $url");
+
+    /// 🔹 5. CALL API
+    final response = await http.get(url);
+
+    print("API RESPONSE: ${response.body}");
+
+    /// 🔹 6. PARSE RESPONSE
+    final responseData = jsonDecode(response.body);
+
+    /// 🔹 7. HANDLE RESPONSE
+    if (responseData is List && responseData.isNotEmpty) {
+
+      final result = responseData[0];
+
+      /// ✅ SUCCESS (msg = 1)
+      if (result["msg"] == 1) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Customer Added Successfully ✅")),
+        );
+
+        /// CLEAR FORM
+        nameController.clear();
+        mobileController.clear();
+        emailController.clear();
+        notesController.clear();
+
+        setState(() {
+          _selectedProject = null;
+        });
+
+        /// 🔥 NAVIGATE ONLY ON SUCCESS
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const DashboardScreen(title: ''),
+          ),
+        );
+      }
+
+      /// ⚠️ REENGAGE (msg = 0)
+      else if (result["msg"] == 0) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result["error_text"] ?? "Customer already exists",
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+
+      /// ❌ UNKNOWN
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Something went wrong ❌")),
+        );
+      }
+    }
+
+  } catch (e) {
+    print("ERROR: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Something went wrong")),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +241,10 @@ class _AddCustomerState extends State<AddCustomer> {
               // --- Customer Name Section ---
               _buildLabel('Customer Name'),
               const SizedBox(height: 8),
-              _buildTextField(hintText: 'Enter full name'),
+              _buildTextField(
+                hintText: 'Enter full name',
+                controller: nameController,
+              ),
               const SizedBox(height: 24),
 
               // --- Mobile Number Section ---
@@ -115,6 +253,7 @@ class _AddCustomerState extends State<AddCustomer> {
               _buildTextField(
                 hintText: '+91 00000 00000',
                 keyboardType: TextInputType.phone,
+                controller: mobileController,
               ),
               const SizedBox(height: 24),
 
@@ -124,6 +263,7 @@ class _AddCustomerState extends State<AddCustomer> {
               _buildTextField(
                 hintText: 'customer@example.com',
                 keyboardType: TextInputType.emailAddress,
+                controller: emailController,
               ),
               const SizedBox(height: 24),
 
@@ -138,6 +278,8 @@ class _AddCustomerState extends State<AddCustomer> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    createLead();
+                   
                     // Handle submit action
                     // You can now access the selected project ID: _selectedProject?.projectId
                   },
@@ -179,8 +321,10 @@ class _AddCustomerState extends State<AddCustomer> {
   Widget _buildTextField({
     required String hintText,
     TextInputType? keyboardType,
+    TextEditingController? controller,
   }) {
     return TextFormField(
+      controller: controller,
       keyboardType: keyboardType,
       decoration: _inputDecoration(hintText),
     );
@@ -188,6 +332,7 @@ class _AddCustomerState extends State<AddCustomer> {
 
   Widget _buildNotesField() {
     return TextFormField(
+      controller: notesController,
       minLines: 4,
       maxLines: 6,
       decoration: _inputDecoration(

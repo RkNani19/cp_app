@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/config/app_config.dart';
 import 'package:gjk_cp/model/video_project_model.dart';
 import 'package:http/http.dart' as http;
-
-import '../model/project_model.dart';
 
 class VideoProjectsViewmodel extends ChangeNotifier {
   List<VideoProjectModel> projects = [];
@@ -18,7 +17,7 @@ class VideoProjectsViewmodel extends ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse("https://gjk.tranquilcrmone.in/mobileapp/projectsformobileapp"),
+        Uri.parse("${AppConfig.baseUrl}/mobileapp/projectsformobileapp"),
       );
 
       print("PROJECT API: ${response.body}");
@@ -27,9 +26,9 @@ class VideoProjectsViewmodel extends ChangeNotifier {
         final data = json.decode(response.body);
 
         projects = [
-          VideoProjectModel(id: "0", name: "All"),
-          ...data.map<VideoProjectModel>((e) => ProjectModel.fromJson(e)).toList(),
-        ];
+  VideoProjectModel(id: "0", name: "All"),
+  ...data.map<VideoProjectModel>((e) => VideoProjectModel.fromJson(e)).toList(),
+];
       } else {
         error = "Server error";
       }

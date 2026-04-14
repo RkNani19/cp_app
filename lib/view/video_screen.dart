@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/viewmodel/video_projects_viewmodel.dart';
+import 'package:gjk_cp/viewmodel/video_viewmodel.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'video_player_screen.dart';
 
 // Dummy DashboardScreen for navigation to work.
 // You can replace this with your actual DashboardScreen import.
@@ -26,67 +30,84 @@ class VideoScreen extends StatefulWidget {
 
 class _VideoScreenState extends State<VideoScreen> {
   // 🔥 FILTER CATEGORIES
-  final List<String> _categories = [
-    "All",
-    "Property Tour",
-    "Amenities",
-    "Township",
-  ];
-  String _selectedCategory = "All";
+  // final List<String> _categories = [
+  //   "All",
+  //   "Property Tour",
+  //   "Amenities",
+  //   "Township",
+  // ];
+ // String _selectedCategory = "All";
 
+
+
+@override
+void initState() {
+  super.initState();
+
+  Future.microtask(() {
+    Provider.of<VideoProjectsViewmodel>(context, listen: false)
+        .fetchProjects();
+
+         Provider.of<VideoViewModel>(context, listen: false)
+        .fetchVideos(); 
+  });
+}
   // 🔥 DUMMY VIDEO DATA
   // This data is set up to match the first card in the screenshot.
-  final List<Map<String, String>> _videos = [
-    {
-      "category": "Property Tour",
-      "title": "GJKedia Signature Towers - Virtual Tour",
-      "views": "2.4K views",
-      "duration": "4:32",
-      "thumbnail":
-          "https://i.imgur.com/8pPnj8X.png", // Using a static image to match screenshot
-    },
-    {
-      "category": "Amenities",
-      "title": "World Class Amenities at GJKedia Homes",
-      "views": "1.8K views",
-      "duration": "3:15",
-      "thumbnail": "https://picsum.photos/seed/gjk2/600/340",
-    },
-    {
-      "category": "Township",
-      "title": "GJKedia Township - A Complete Lifestyle",
-      "views": "3.1K views",
-      "duration": "6:10",
-      "thumbnail": "https://picsum.photos/seed/gjk3/600/340",
-    },
-    {
-      "category": "Property Tour",
-      "title": "Luxury Villas - Walkthrough 2024",
-      "views": "980 views",
-      "duration": "5:45",
-      "thumbnail": "https://picsum.photos/seed/gjk4/600/340",
-    },
-    {
-      "category": "Amenities",
-      "title": "Swimming Pool & Clubhouse Tour",
-      "views": "1.2K views",
-      "duration": "2:55",
-      "thumbnail": "https://picsum.photos/seed/gjk5/600/340",
-    },
-    {
-      "category": "Township",
-      "title": "GJKedia Green Township Overview",
-      "views": "750 views",
-      "duration": "4:00",
-      "thumbnail": "https://picsum.photos/seed/gjk6/600/340",
-    },
-  ];
+  // final List<Map<String, String>> _videos = [
+  //   {
+  //     "category": "Property Tour",
+  //     "title": "GJKedia Signature Towers - Virtual Tour",
+  //     "views": "2.4K views",
+  //     "duration": "4:32",
+  //     "thumbnail":
+  //         "https://i.imgur.com/8pPnj8X.png", // Using a static image to match screenshot
+  //   },
+  //   {
+  //     "category": "Amenities",
+  //     "title": "World Class Amenities at GJKedia Homes",
+  //     "views": "1.8K views",
+  //     "duration": "3:15",
+  //     "thumbnail": "https://picsum.photos/seed/gjk2/600/340",
+  //   },
+  //   {
+  //     "category": "Township",
+  //     "title": "GJKedia Township - A Complete Lifestyle",
+  //     "views": "3.1K views",
+  //     "duration": "6:10",
+  //     "thumbnail": "https://picsum.photos/seed/gjk3/600/340",
+  //   },
+  //   {
+  //     "category": "Property Tour",
+  //     "title": "Luxury Villas - Walkthrough 2024",
+  //     "views": "980 views",
+  //     "duration": "5:45",
+  //     "thumbnail": "https://picsum.photos/seed/gjk4/600/340",
+  //   },
+  //   {
+  //     "category": "Amenities",
+  //     "title": "Swimming Pool & Clubhouse Tour",
+  //     "views": "1.2K views",
+  //     "duration": "2:55",
+  //     "thumbnail": "https://picsum.photos/seed/gjk5/600/340",
+  //   },
+  //   {
+  //     "category": "Township",
+  //     "title": "GJKedia Green Township Overview",
+  //     "views": "750 views",
+  //     "duration": "4:00",
+  //     "thumbnail": "https://picsum.photos/seed/gjk6/600/340",
+  //   },
+  // ];
 
   // 🔥 FILTERED LIST
-  List<Map<String, String>> get _filteredVideos {
-    if (_selectedCategory == "All") return _videos;
-    return _videos.where((v) => v["category"] == _selectedCategory).toList();
-  }
+//  List<Map<String, String>> getFilteredVideos(String selectedCategory) {
+//   if (selectedCategory == "All") return _videos;
+
+//   return _videos
+//       .where((v) => v["category"] == selectedCategory)
+//       .toList();
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -135,62 +156,79 @@ class _VideoScreenState extends State<VideoScreen> {
                             color: const Color(0xFFEBEBFF),
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          child: Text(
-                            "${_videos.length} Videos",
-                            style: const TextStyle(
-                              color: Color(0xFF4338CA),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
+                         child: Consumer<VideoViewModel>(
+  builder: (context, vm, child) {
+    return Text(
+      "${vm.videos.length} Videos",
+      style: const TextStyle(
+        color: Color(0xFF4338CA),
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
+      ),
+    );
+  },
+),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 20),
 
-                    /// ========== FILTER CHIPS ==========
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: _categories.map((category) {
-                          final bool isSelected = _selectedCategory == category;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() => _selectedCategory = category);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFFD4B483) // Tan Gold color
-                                    : Colors.white,
-                                border: Border.all(
-                                  color: isSelected
-                                      ? const Color(0xFFD4B483)
-                                      : Colors.grey.shade300,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Text(
-                                category,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                    Consumer<VideoProjectsViewmodel>(
+  builder: (context, vm, child) {
+    if (vm.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (vm.projects.isEmpty) {
+      return const Text("No Categories");
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: vm.projects.map((project) {
+          final bool isSelected =
+              vm.selectedCategory == project.name;
+
+          return GestureDetector(
+            onTap: () {
+              vm.selectCategory(project.name);
+            },
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFFD4B483)
+                    : Colors.white,
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFFD4B483)
+                      : Colors.grey.shade300,
+                ),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text(
+                project.name,
+                style: TextStyle(
+                  color: isSelected
+                      ? Colors.white
+                      : Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  },
+),
                   ],
                 ),
               ),
@@ -198,24 +236,55 @@ class _VideoScreenState extends State<VideoScreen> {
               const SizedBox(height: 20),
 
               /// ========== VIDEO LIST ==========
-              Expanded(
-                child: _filteredVideos.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "No videos found",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: _filteredVideos.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 24),
-                        itemBuilder: (context, index) {
-                          final video = _filteredVideos[index];
-                          return videoCard(video);
-                        },
-                      ),
-              ),
+             Expanded(
+  child: Consumer2<VideoProjectsViewmodel, VideoViewModel>(
+    builder: (context, projectVM, videoVM, child) {
+      if (videoVM.isLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      // 🔥 API → UI format
+      List<Map<String, String>> apiVideos =
+          videoVM.videos.map((v) {
+        return {
+          "category": v.name,
+          "title": v.title,
+          "views": "1K views",
+          "duration": "3:00",
+          "thumbnail":
+             "https://picsum.photos/seed/${v.id}/600/300",
+             "videoUrl": v.videoUrl,
+        };
+      }).toList();
+
+      // 🔥 FILTER
+      final finalVideos = projectVM.selectedCategory == "All"
+          ? apiVideos
+          : apiVideos
+              .where((v) =>
+                  v["category"] == projectVM.selectedCategory)
+              .toList();
+
+      if (finalVideos.isEmpty) {
+        return const Center(
+          child: Text(
+            "No videos found",
+            style: TextStyle(color: Colors.grey),
+          ),
+        );
+      }
+
+      return ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: finalVideos.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 24),
+        itemBuilder: (context, index) {
+          return videoCard(finalVideos[index]); // ✅ FIXED
+        },
+      );
+    },
+  ),
+)
             ],
           ),
         ),
@@ -233,7 +302,24 @@ class _VideoScreenState extends State<VideoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// THUMBNAIL AREA
-            Stack(
+       GestureDetector(
+ onTap: () {
+  final url = video["videoUrl"];
+
+  if (url != null && url.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VideoPlayerScreen(videoUrl: url),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Video not available")),
+    );
+  }
+},
+  child: Stack(     
               alignment: Alignment.center,
               children: [
                 /// IMAGE
@@ -332,6 +418,7 @@ class _VideoScreenState extends State<VideoScreen> {
                   ),
                 ),
               ],
+  ),
             ),
 
             /// INFO & BUTTONS AREA
@@ -409,4 +496,18 @@ class _VideoScreenState extends State<VideoScreen> {
       ),
     );
   }
+}
+
+String _extractYoutubeId(String url) {
+  try {
+    final uri = Uri.parse(url);
+
+    if (uri.queryParameters.containsKey('v')) {
+      return uri.queryParameters['v']!;
+    } else if (uri.pathSegments.isNotEmpty) {
+      return uri.pathSegments.last;
+    }
+  } catch (e) {}
+
+  return "";
 }

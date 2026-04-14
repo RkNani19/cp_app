@@ -511,18 +511,14 @@ class QuickActionsGrid extends StatelessWidget {
               case "Sales History":
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SalesHistory(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SalesHistory()),
                 );
                 break;
 
               case "My Customers":
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const Customer(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const Customer()),
                 );
                 break;
 
@@ -544,11 +540,15 @@ class QuickActionsGrid extends StatelessWidget {
                 );
                 break;
 
-              case "Share":
+             case "Share App Link":
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Share(title: '')),
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const Share(title: "Share App & Earn"),
+                  ),
                 );
+                break;
             }
           },
           child: Container(
