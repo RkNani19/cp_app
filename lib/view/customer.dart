@@ -145,7 +145,7 @@ class _CustomerState extends State<Customer> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MyCustomerDetails(title: '',),
+        builder: (_) => MyCustomerDetails(customer: customer,),
       ),
     );
   },
