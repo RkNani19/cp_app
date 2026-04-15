@@ -24,7 +24,9 @@ class CustomerModel {
       project: json['requirement_name'] ?? '',
       activity: json['activity_name'] ?? '',
       date: json['created_date'] ?? '',
-       id: '',
+     id: json['s_no'] ?? ''
     );
   }
+
+  get id => null;
 }
