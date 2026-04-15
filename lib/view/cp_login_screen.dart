@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/view/dashboard_screen.dart';
+import 'package:gjk_cp/view/sale_history.dart';
 import 'package:gjk_cp/viewmodel/cp_dashboard_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -136,18 +137,32 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
                     crossAxisSpacing: 16,
                     childAspectRatio: 1,
                     children: [
-                      quickActionItem(Icons.person_add_alt_1, "Add Customer",  onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AddCustomer(title: '',),
-          ),
-        );
-      },
+                      quickActionItem(
+                        Icons.person_add_alt_1,
+                        "Add Customer",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AddCustomer(title: ''),
+                            ),
+                          );
+                        },
                       ),
-                      
-                      
-                      quickActionItem(Icons.history, "Sales History"),
+
+                      quickActionItem(
+                        Icons.history,
+                        "Sales History",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SalesHistory(),
+                            ),
+                          );
+                        },
+                      ),
                       quickActionItem(Icons.image_outlined, "Creatives"),
                       quickActionItem(Icons.share_outlined, "Share App"),
                     ],
@@ -277,7 +292,7 @@ class _CpLoginScreenState extends State<CpLoginScreen> {
   }
 
   /// 🔷 QUICK ACTION ITEM
-  Widget quickActionItem(IconData icon, String title,{VoidCallback? onTap}) {
+  Widget quickActionItem(IconData icon, String title, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

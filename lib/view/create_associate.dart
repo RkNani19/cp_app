@@ -194,6 +194,7 @@ class _CreateAssociateScreenState extends State<CreateAssociateScreen> {
                     : const Text(
                         "Create Associate",
                         style: TextStyle(
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

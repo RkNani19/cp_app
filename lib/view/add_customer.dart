@@ -359,7 +359,9 @@ Future<void> loadCpId() async {
       maxLines: 6,
       decoration: _inputDecoration(
         'Add any additional notes...',
-      ).copyWith(suffixIcon: Icon(Icons.mic_none, color: Colors.grey[600])),
+      ).copyWith(
+       // suffixIcon: Icon(Icons.mic_none, color: Colors.grey[600])
+        ),
     );
   }
 

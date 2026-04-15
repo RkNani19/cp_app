@@ -214,20 +214,20 @@ class _TeleCallerState extends State<TeleCaller> {
               "Call List",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.filter_list, size: 18),
-                  SizedBox(width: 6),
-                  Text("Filter"),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(20),
+            //     border: Border.all(color: Colors.grey.shade300),
+            //   ),
+            //   child: const Row(
+            //     children: [
+            //       Icon(Icons.filter_list, size: 18),
+            //       SizedBox(width: 6),
+            //       Text("Filter"),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
 

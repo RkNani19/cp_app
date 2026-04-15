@@ -1,5 +1,5 @@
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_device_apps/flutter_device_apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -34,7 +34,7 @@ String get shareText {
 }
 
 Future<bool> isAppInstalled(String packageName) async {
-  return await DeviceApps.isAppInstalled(packageName);
+  return await FlutterDeviceApps.openApp(packageName);
 }
 
 Future<void> openAppOrStore({

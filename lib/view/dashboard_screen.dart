@@ -132,28 +132,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
 
         /// NOTIFICATION
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none_outlined),
-                onPressed: () {},
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGold,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+        // actions: [
+        //   Stack(
+        //     children: [
+        //       // IconButton(
+        //       //   icon: const Icon(Icons.notifications_none_outlined),
+        //       //   onPressed: () {},
+        //       // ),
+        //       Positioned(
+        //         top: 12,
+        //         right: 12,
+        //         child: Container(
+        //           width: 8,
+        //           height: 8,
+        //           decoration: BoxDecoration(
+        //             color: AppColors.accentGold,
+        //             shape: BoxShape.circle,
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ],
       ),
 
       /// ================= DRAWER =================
