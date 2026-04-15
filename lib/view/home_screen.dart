@@ -7,6 +7,7 @@ import 'package:gjk_cp/view/creatives.dart';
 import 'package:gjk_cp/view/customer.dart';
 import 'package:gjk_cp/view/sale_history.dart';
 import 'package:gjk_cp/view/share.dart';
+import 'package:gjk_cp/view/view_all_projects.dart';
 import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/feth_project_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -287,10 +288,12 @@ class SearchBarWidget extends StatelessWidget {
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool showViewAll;
+    final VoidCallback? onViewAllTap;
   const SectionHeader({
     Key? key,
     required this.title,
     required this.showViewAll,
+     this.onViewAllTap,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -306,7 +309,16 @@ class SectionHeader extends StatelessWidget {
           ),
         ),
         if (showViewAll)
-          Text(
+        GestureDetector(
+          onTap:  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewAllProjects(),
+      ),
+    );
+  },
+       child: Text(
             "View All",
             style: TextStyle(
               color: AppColors.accentGold.withOpacity(0.8),
@@ -314,6 +326,7 @@ class SectionHeader extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
+        )
       ],
     );
   }
@@ -545,7 +558,7 @@ class QuickActionsGrid extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const Share(title: "Share App & Earn"),
+                        const ShareScreen(title: "Share App & Earn"),
                   ),
                 );
                 break;
