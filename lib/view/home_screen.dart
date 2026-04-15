@@ -288,12 +288,12 @@ class SearchBarWidget extends StatelessWidget {
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool showViewAll;
-    final VoidCallback? onViewAllTap;
+  final VoidCallback? onViewAllTap;
   const SectionHeader({
     Key? key,
     required this.title,
     required this.showViewAll,
-     this.onViewAllTap,
+    this.onViewAllTap,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -309,24 +309,22 @@ class SectionHeader extends StatelessWidget {
           ),
         ),
         if (showViewAll)
-        GestureDetector(
-          onTap:  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ViewAllProjects(),
-      ),
-    );
-  },
-       child: Text(
-            "View All",
-            style: TextStyle(
-              color: AppColors.accentGold.withOpacity(0.8),
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ViewAllProjects()),
+              );
+            },
+            child: Text(
+              "View All",
+              style: TextStyle(
+                color: AppColors.accentGold.withOpacity(0.8),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        )
       ],
     );
   }
@@ -553,7 +551,7 @@ class QuickActionsGrid extends StatelessWidget {
                 );
                 break;
 
-             case "Share App Link":
+              case "Share App Link":
                 Navigator.push(
                   context,
                   MaterialPageRoute(

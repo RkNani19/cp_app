@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/config/app_config.dart';
 import 'package:gjk_cp/model/all_project_model.dart';
+import 'package:gjk_cp/view/project_details.dart';
 import 'package:http/http.dart' as http;
 
 class ViewAllProjects extends StatefulWidget {
@@ -152,7 +153,15 @@ class ProjectCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProjectDetailsScreen(projectId: data.id),
+                          ),
+                        );
+                      },
                       child: const Text("View"),
                     ),
                   ],
