@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/dashboard_screen.dart';
 import 'package:gjk_cp/viewmodel/video_projects_viewmodel.dart';
 import 'package:gjk_cp/viewmodel/video_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -7,18 +8,18 @@ import 'video_player_screen.dart';
 
 // Dummy DashboardScreen for navigation to work.
 // You can replace this with your actual DashboardScreen import.
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key, required this.title});
-  final String title;
+// class DashboardScreen extends StatelessWidget {
+//   const DashboardScreen({super.key, required this.title});
+//   final String title;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Dashboard")),
-      body: const Center(child: Text("Dashboard Screen")),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("Dashboard")),
+//       body: const Center(child: Text("Dashboard Screen")),
+//     );
+//   }
+// }
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({super.key, required this.title});
@@ -246,15 +247,14 @@ void initState() {
       // 🔥 API → UI format
       List<Map<String, String>> apiVideos =
           videoVM.videos.map((v) {
-        return {
-          "category": v.name,
-          "title": v.title,
-          "views": "1K views",
-          "duration": "3:00",
-          "thumbnail":
-             "https://picsum.photos/seed/${v.id}/600/300",
-             "videoUrl": v.videoUrl,
-        };
+       return {
+  "category": v.name ?? "",
+  "title": v.title ?? "",
+ // "duration": "3:00",
+  "thumbnail": "https://picsum.photos/seed/${v.id}/600/300",
+  "videoUrl": v.videoUrl ?? "",
+   // ✅ ADD THIS
+};
       }).toList();
 
       // 🔥 FILTER
@@ -324,7 +324,7 @@ void initState() {
               children: [
                 /// IMAGE
                 Image.network(
-                  video["thumbnail"]!,
+                 video["category"] ?? "",
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
@@ -406,7 +406,7 @@ void initState() {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          video["duration"]!,
+                         video["duration"] ?? "",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -429,7 +429,7 @@ void initState() {
                 children: [
                   /// TITLE
                   Text(
-                    video["title"]!,
+                    video["title"] ?? "No Title",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -441,7 +441,7 @@ void initState() {
 
                   /// VIEWS
                   Text(
-                    video["views"]!,
+                   video["views"] ?? "0 views",
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
 
@@ -469,9 +469,19 @@ void initState() {
                       /// SHARE
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            Share.share('${video["title"]}\nCheck this video!');
-                          },
+                         onPressed: () {
+  final url = video["videoUrl"];
+
+  if (url != null && url.isNotEmpty) {
+    Share.share(
+      "${video["title"]}\n\nWatch here: $url",
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Video not available")),
+    );
+  }
+},
                           icon: const Icon(
                             Icons.share,
                             size: 20,

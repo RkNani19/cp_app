@@ -5,6 +5,7 @@ import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/view/create_associate.dart';
 import 'package:gjk_cp/view/creatives.dart';
 import 'package:gjk_cp/view/customer.dart';
+import 'package:gjk_cp/view/project_details.dart';
 import 'package:gjk_cp/view/sale_history.dart';
 import 'package:gjk_cp/view/share.dart';
 import 'package:gjk_cp/view/view_all_projects.dart';
@@ -216,20 +217,22 @@ class HeroBanner extends StatelessWidget {
                     ),
                   ],
                 ),
+                // Inside HeroBanner
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProjectDetailsScreen(
+                          projectId: banner.id
+                              .toString(), // Passing the ID from the banner
+                        ),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accentGold,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 0,
-                    ),
-                    minimumSize: const Size(0, 36),
+                    // ... rest of your styles
                   ),
                   child: Row(
                     children: const [
@@ -447,8 +450,19 @@ class FeaturedProjectsList extends StatelessWidget {
                               ),
                             ],
                           ),
+                          // Inside FeaturedProjectsList -> ListView.builder -> itemBuilder
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProjectDetailsScreen(
+                                    projectId: project.id
+                                        .toString(), // Passing the ID here
+                                  ),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryDark,
                               foregroundColor: Colors.white,
