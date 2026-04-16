@@ -6,21 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'video_player_screen.dart';
 
-// Dummy DashboardScreen for navigation to work.
-// You can replace this with your actual DashboardScreen import.
-// class DashboardScreen extends StatelessWidget {
-//   const DashboardScreen({super.key, required this.title});
-//   final String title;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Dashboard")),
-//       body: const Center(child: Text("Dashboard Screen")),
-//     );
-//   }
-// }
-
 class VideoScreen extends StatefulWidget {
   const VideoScreen({super.key, required this.title});
   final String title;
@@ -30,85 +15,19 @@ class VideoScreen extends StatefulWidget {
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-  // 🔥 FILTER CATEGORIES
-  // final List<String> _categories = [
-  //   "All",
-  //   "Property Tour",
-  //   "Amenities",
-  //   "Township",
-  // ];
- // String _selectedCategory = "All";
+  @override
+  void initState() {
+    super.initState();
 
+    Future.microtask(() {
+      Provider.of<VideoProjectsViewmodel>(
+        context,
+        listen: false,
+      ).fetchProjects();
 
-
-@override
-void initState() {
-  super.initState();
-
-  Future.microtask(() {
-    Provider.of<VideoProjectsViewmodel>(context, listen: false)
-        .fetchProjects();
-
-         Provider.of<VideoViewModel>(context, listen: false)
-        .fetchVideos(); 
-  });
-}
-  // 🔥 DUMMY VIDEO DATA
-  // This data is set up to match the first card in the screenshot.
-  // final List<Map<String, String>> _videos = [
-  //   {
-  //     "category": "Property Tour",
-  //     "title": "GJKedia Signature Towers - Virtual Tour",
-  //     "views": "2.4K views",
-  //     "duration": "4:32",
-  //     "thumbnail":
-  //         "https://i.imgur.com/8pPnj8X.png", // Using a static image to match screenshot
-  //   },
-  //   {
-  //     "category": "Amenities",
-  //     "title": "World Class Amenities at GJKedia Homes",
-  //     "views": "1.8K views",
-  //     "duration": "3:15",
-  //     "thumbnail": "https://picsum.photos/seed/gjk2/600/340",
-  //   },
-  //   {
-  //     "category": "Township",
-  //     "title": "GJKedia Township - A Complete Lifestyle",
-  //     "views": "3.1K views",
-  //     "duration": "6:10",
-  //     "thumbnail": "https://picsum.photos/seed/gjk3/600/340",
-  //   },
-  //   {
-  //     "category": "Property Tour",
-  //     "title": "Luxury Villas - Walkthrough 2024",
-  //     "views": "980 views",
-  //     "duration": "5:45",
-  //     "thumbnail": "https://picsum.photos/seed/gjk4/600/340",
-  //   },
-  //   {
-  //     "category": "Amenities",
-  //     "title": "Swimming Pool & Clubhouse Tour",
-  //     "views": "1.2K views",
-  //     "duration": "2:55",
-  //     "thumbnail": "https://picsum.photos/seed/gjk5/600/340",
-  //   },
-  //   {
-  //     "category": "Township",
-  //     "title": "GJKedia Green Township Overview",
-  //     "views": "750 views",
-  //     "duration": "4:00",
-  //     "thumbnail": "https://picsum.photos/seed/gjk6/600/340",
-  //   },
-  // ];
-
-  // 🔥 FILTERED LIST
-//  List<Map<String, String>> getFilteredVideos(String selectedCategory) {
-//   if (selectedCategory == "All") return _videos;
-
-//   return _videos
-//       .where((v) => v["category"] == selectedCategory)
-//       .toList();
-// }
+      Provider.of<VideoViewModel>(context, listen: false).fetchVideos();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,18 +76,18 @@ void initState() {
                             color: const Color(0xFFEBEBFF),
                             borderRadius: BorderRadius.circular(30),
                           ),
-                         child: Consumer<VideoViewModel>(
-  builder: (context, vm, child) {
-    return Text(
-      "${vm.videos.length} Videos",
-      style: const TextStyle(
-        color: Color(0xFF4338CA),
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-      ),
-    );
-  },
-),
+                          child: Consumer<VideoViewModel>(
+                            builder: (context, vm, child) {
+                              return Text(
+                                "${vm.videos.length} Videos",
+                                style: const TextStyle(
+                                  color: Color(0xFF4338CA),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -176,60 +95,62 @@ void initState() {
                     const SizedBox(height: 20),
 
                     Consumer<VideoProjectsViewmodel>(
-  builder: (context, vm, child) {
-    if (vm.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+                      builder: (context, vm, child) {
+                        if (vm.isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-    if (vm.projects.isEmpty) {
-      return const Text("No Categories");
-    }
+                        if (vm.projects.isEmpty) {
+                          return const Text("No Categories");
+                        }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: vm.projects.map((project) {
-          final bool isSelected =
-              vm.selectedCategory == project.name;
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: vm.projects.map((project) {
+                              final bool isSelected =
+                                  vm.selectedCategory == project.name;
 
-          return GestureDetector(
-            onTap: () {
-              vm.selectCategory(project.name);
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFFD4B483)
-                    : Colors.white,
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFFD4B483)
-                      : Colors.grey.shade300,
-                ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Text(
-                project.name,
-                style: TextStyle(
-                  color: isSelected
-                      ? Colors.white
-                      : Colors.grey.shade700,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  },
-),
+                              return GestureDetector(
+                                onTap: () {
+                                  vm.selectCategory(project.name);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? const Color(0xFFD4B483)
+                                        : Colors.white,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? const Color(0xFFD4B483)
+                                          : Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Text(
+                                    project.name,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.grey.shade700,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -237,54 +158,57 @@ void initState() {
               const SizedBox(height: 20),
 
               /// ========== VIDEO LIST ==========
-             Expanded(
-  child: Consumer2<VideoProjectsViewmodel, VideoViewModel>(
-    builder: (context, projectVM, videoVM, child) {
-      if (videoVM.isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+              Expanded(
+                child: Consumer2<VideoProjectsViewmodel, VideoViewModel>(
+                  builder: (context, projectVM, videoVM, child) {
+                    if (videoVM.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-      // 🔥 API → UI format
-      List<Map<String, String>> apiVideos =
-          videoVM.videos.map((v) {
-       return {
-  "category": v.name ?? "",
-  "title": v.title ?? "",
- // "duration": "3:00",
-  "thumbnail": "https://picsum.photos/seed/${v.id}/600/300",
-  "videoUrl": v.videoUrl ?? "",
-   // ✅ ADD THIS
-};
-      }).toList();
+                    // 🔥 API → UI format
+                    List<Map<String, String>> apiVideos = videoVM.videos.map((
+                      v,
+                    ) {
+                      final videoId = _extractYoutubeId(v.videoUrl);
 
-      // 🔥 FILTER
-      final finalVideos = projectVM.selectedCategory == "All"
-          ? apiVideos
-          : apiVideos
-              .where((v) =>
-                  v["category"] == projectVM.selectedCategory)
-              .toList();
+                      return {
+                        "category": v.name,
+                        "title": v.title,
+                        "thumbnail":
+                            "https://img.youtube.com/vi/$videoId/0.jpg", // ✅ FIXED
+                        "videoUrl": v.videoUrl,
+                      };
+                    }).toList();
+                    // 🔥 FILTER
+                    final finalVideos = projectVM.selectedCategory == "All"
+                        ? apiVideos
+                        : apiVideos
+                              .where(
+                                (v) =>
+                                    v["category"] == projectVM.selectedCategory,
+                              )
+                              .toList();
 
-      if (finalVideos.isEmpty) {
-        return const Center(
-          child: Text(
-            "No videos found",
-            style: TextStyle(color: Colors.grey),
-          ),
-        );
-      }
+                    if (finalVideos.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No videos found",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      );
+                    }
 
-      return ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: finalVideos.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 24),
-        itemBuilder: (context, index) {
-          return videoCard(finalVideos[index]); // ✅ FIXED
-        },
-      );
-    },
-  ),
-)
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: finalVideos.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 24),
+                      itemBuilder: (context, index) {
+                        return videoCard(finalVideos[index]); // ✅ FIXED
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -302,123 +226,119 @@ void initState() {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// THUMBNAIL AREA
-       GestureDetector(
- onTap: () {
-  final url = video["videoUrl"];
+            GestureDetector(
+              onTap: () {
+                final url = video["videoUrl"];
 
-  if (url != null && url.isNotEmpty) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => VideoPlayerScreen(videoUrl: url),
-      ),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Video not available")),
-    );
-  }
-},
-  child: Stack(     
-              alignment: Alignment.center,
-              children: [
-                /// IMAGE
-                Image.network(
-                 video["category"] ?? "",
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                if (url != null && url.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => VideoPlayerScreen(videoUrl: url),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Video not available")),
+                  );
+                }
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  /// IMAGE
+                  Image.network(
+                    video["thumbnail"] ?? "",
+                    width: double.infinity,
                     height: 200,
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.broken_image,
-                      size: 50,
-                      color: Colors.grey,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image, size: 50),
                     ),
                   ),
-                ),
 
-                /// PLAY BUTTON (center)
-                Container(
-                  height: 60,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Color(0xFF0D1B6F),
-                    size: 36,
-                  ),
-                ),
-
-                /// CATEGORY BADGE (top left)
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+                  /// PLAY BUTTON (center)
+                  Container(
+                    height: 60,
+                    width: 60,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4B483),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      video["category"]!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
-                /// DURATION BADGE (bottom right)
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.access_time_filled,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                         video["duration"] ?? "",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      color: Colors.white.withOpacity(0.95),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
                         ),
                       ],
                     ),
+                    child: const Icon(
+                      Icons.play_arrow,
+                      color: Color(0xFF0D1B6F),
+                      size: 36,
+                    ),
                   ),
-                ),
-              ],
-  ),
+
+                  /// CATEGORY BADGE (top left)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4B483),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        video["category"]!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// DURATION BADGE (bottom right)
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.access_time_filled,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            video["duration"] ?? "",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             /// INFO & BUTTONS AREA
@@ -439,11 +359,6 @@ void initState() {
 
                   const SizedBox(height: 6),
 
-                  /// VIEWS
-                  Text(
-                   video["views"] ?? "0 views",
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
 
                   const SizedBox(height: 16),
 
@@ -469,19 +384,21 @@ void initState() {
                       /// SHARE
                       Expanded(
                         child: ElevatedButton.icon(
-                         onPressed: () {
-  final url = video["videoUrl"];
+                          onPressed: () {
+                            final url = video["videoUrl"];
 
-  if (url != null && url.isNotEmpty) {
-    Share.share(
-      "${video["title"]}\n\nWatch here: $url",
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Video not available")),
-    );
-  }
-},
+                            if (url != null && url.isNotEmpty) {
+                              Share.share(
+                                "${video["title"]}\n\nWatch here: $url",
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Video not available"),
+                                ),
+                              );
+                            }
+                          },
                           icon: const Icon(
                             Icons.share,
                             size: 20,

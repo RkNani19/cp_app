@@ -49,7 +49,7 @@ class _CreateAssociateScreenState extends State<CreateAssociateScreen> {
         "name": nameController.text.trim(),
         "mobile_number": mobileController.text.trim(),
         "email": emailController.text.trim(),
-        "bank_name": "ICICI",
+        "bank_name": "",
         "account_number": bankController.text.trim(),
         "ifsc_code": ifscController.text.trim(),
         "pan_card": panController.text.trim(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gjk_cp/model/banner_model.dart';
 import 'package:gjk_cp/model/fetch_project_model.dart';
+import 'package:gjk_cp/view/SearchViewModel.dart';
 import 'package:gjk_cp/view/add_customer.dart';
 import 'package:gjk_cp/view/create_associate.dart';
 import 'package:gjk_cp/view/creatives.dart';
@@ -241,10 +242,15 @@ class HeroBanner extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
+                          color: Colors.white, // ✅ added
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, size: 14),
+                      Icon(
+                        Icons.arrow_forward,
+                        size: 14,
+                        color: Colors.white, // ✅ added
+                      ),
                     ],
                   ),
                 ),
@@ -258,31 +264,100 @@ class HeroBanner extends StatelessWidget {
 }
 
 /// ================= SEARCH =================
-class SearchBarWidget extends StatelessWidget {
+class SearchBarWidget extends StatefulWidget {
   const SearchBarWidget({Key? key}) : super(key: key);
+
+  @override
+  State<SearchBarWidget> createState() => _SearchBarWidgetState();
+}
+
+class _SearchBarWidgetState extends State<SearchBarWidget> {
+  final TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    final vm = Provider.of<SearchViewModel>(context);
+
+    return Column(
+      children: [
+        /// 🔍 SEARCH FIELD
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(30),
           ),
-        ],
-      ),
-      child: const TextField(
-        decoration: InputDecoration(
-          hintText: "Search by location, project, BHK...",
-          hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 13),
-          prefixIcon: Icon(Icons.search, color: AppColors.textGrey, size: 20),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 14),
+          child: TextField(
+            controller: controller,
+            onChanged: (value) {
+              vm.searchProjects(value); // 🔥 API TRIGGER
+            },
+            decoration: InputDecoration(
+              hintText: "Search project...",
+              prefixIcon: Icon(Icons.search),
+
+              /// ❌ CLEAR BUTTON
+              suffixIcon: vm.query.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        controller.clear();
+                        vm.clearSearch();
+                      },
+                    )
+                  : null,
+
+              border: InputBorder.none,
+            ),
+          ),
         ),
-      ),
+
+        const SizedBox(height: 10),
+
+        /// 🔄 LOADING
+        if (vm.isLoading) const Center(child: CircularProgressIndicator()),
+
+        /// 📭 EMPTY
+        if (!vm.isLoading && vm.results.isEmpty && vm.query.isNotEmpty)
+          const Text("No results found"),
+
+        /// 📋 RESULTS LIST
+        if (vm.results.isNotEmpty)
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: vm.results.length,
+            itemBuilder: (context, index) {
+              final item = vm.results[index];
+
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: ListTile(
+                  leading: Image.network(
+                    item.image,
+                    width: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.image),
+                  ),
+                  title: Text(item.name),
+                  subtitle: Text(item.location),
+                  trailing: Text("₹${item.price}"),
+
+                  /// 🔥 CLICK ACTION
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProjectDetailsScreen(
+                          projectId: item.id, // 🔥 PASS ID HERE
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 }

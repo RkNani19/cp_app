@@ -26,9 +26,11 @@ class VideoProjectsViewmodel extends ChangeNotifier {
         final data = json.decode(response.body);
 
         projects = [
-  VideoProjectModel(id: "0", name: "All"),
-  ...data.map<VideoProjectModel>((e) => VideoProjectModel.fromJson(e)).toList(),
-];
+          VideoProjectModel(id: "0", name: "All"),
+          ...data
+              .map<VideoProjectModel>((e) => VideoProjectModel.fromJson(e))
+              .toList(),
+        ];
       } else {
         error = "Server error";
       }

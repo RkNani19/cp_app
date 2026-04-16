@@ -23,22 +23,21 @@ class TellCallViewmodel extends ChangeNotifier {
 
     print("call view API: $url");
 
-
     try {
       final response = await http.get(Uri.parse(url));
 
-       print("RESPONSE: ${response.body}"); 
+      print("RESPONSE: ${response.body}");
 
       if (response.statusCode == 200) {
-       final data = json.decode(response.body);
+        final data = json.decode(response.body);
 
-if (data is List && data.isNotEmpty) {
-  calldata = TelleCallModel.fromJson(data[0]); // ✅ FIX
-} else if (data is Map<String, dynamic>) {
-  calldata = TelleCallModel.fromJson(data);
-} else {
-  calldata = null;
-}
+        if (data is List && data.isNotEmpty) {
+          calldata = TelleCallModel.fromJson(data[0]); // ✅ FIX
+        } else if (data is Map<String, dynamic>) {
+          calldata = TelleCallModel.fromJson(data);
+        } else {
+          calldata = null;
+        }
       }
     } catch (e) {
       print("ERROR: $e");
@@ -47,5 +46,4 @@ if (data is List && data.isNotEmpty) {
     isLoading = false;
     notifyListeners();
   }
-  }
-
+}

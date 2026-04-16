@@ -4,8 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
-class ShareScreen  extends StatefulWidget {
-  const ShareScreen ({super.key, required this.title});
+class ShareScreen extends StatefulWidget {
+  const ShareScreen({super.key, required this.title});
   final String title;
 
   @override
@@ -13,12 +13,11 @@ class ShareScreen  extends StatefulWidget {
 }
 
 class _ShareScreenState extends State<ShareScreen> {
-
   final String facebookPackage = "com.facebook.katana";
-final String instagramPackage = "com.instagram.android";
-final String twitterPackage = "com.twitter.android";
+  final String instagramPackage = "com.instagram.android";
+  final String twitterPackage = "com.twitter.android";
 
-   String cpId = "";
+  String cpId = "";
 
   @override
   void initState() {
@@ -26,113 +25,113 @@ final String twitterPackage = "com.twitter.android";
     loadCpId();
   }
 
+  String get shareText {
+    if (cpId.isEmpty) return "Loading...";
 
-String get shareText {
-  if (cpId.isEmpty) return "Loading...";
+    return "Join using my referral code: $cpId\nhttps://gjkediahomes.app/partner?ref=$cpId";
+  }
 
-  return "Join using my referral code: $cpId\nhttps://gjkediahomes.app/partner?ref=$cpId";
-}
+  Future<bool> isAppInstalled(String packageName) async {
+    return await FlutterDeviceApps.openApp(packageName);
+  }
 
-Future<bool> isAppInstalled(String packageName) async {
-  return await FlutterDeviceApps.openApp(packageName);
-}
+  Future<void> openAppOrStore({
+    required String appUrl,
+    required String packageName,
+  }) async {
+    final Uri uri = Uri.parse(appUrl);
 
-Future<void> openAppOrStore({
-  required String appUrl,
-  required String packageName,
-}) async {
-  final Uri uri = Uri.parse(appUrl);
+    try {
+      bool launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
 
-  try {
-    bool launched = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+      if (!launched) {
+        throw "App not opened";
+      }
+    } catch (e) {
+      /// 🔥 OPEN PLAY STORE
+      final playStoreUrl = Uri.parse(
+        "https://play.google.com/store/apps/details?id=$packageName",
+      );
 
-    if (!launched) {
-      throw "App not opened";
+      await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
     }
-  } catch (e) {
-    /// 🔥 OPEN PLAY STORE
-    final playStoreUrl = Uri.parse(
-      "https://play.google.com/store/apps/details?id=$packageName",
-    );
-
-    await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
   }
-}
 
-
-Future<void> shareToWhatsApp() async {
-  final url = Uri.parse("https://wa.me/?text=${Uri.encodeComponent(shareText)}");
-
-  if (await canLaunchUrl(url)) {
-    await launchUrl(url, mode: LaunchMode.externalApplication);
-  }
-}
-
-Future<void> shareToFacebook() async {
-  bool installed = await isAppInstalled(facebookPackage);
-
-  if (installed) {
+  Future<void> shareToWhatsApp() async {
     final url = Uri.parse(
-      "fb://facewebmodal/f?href=${Uri.encodeComponent(shareText)}",
+      "https://wa.me/?text=${Uri.encodeComponent(shareText)}",
     );
 
-    await launchUrl(url, mode: LaunchMode.externalApplication);
-  } else {
-    final playStoreUrl = Uri.parse(
-      "https://play.google.com/store/apps/details?id=$facebookPackage",
-    );
-
-    await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
-}
 
-Future<void> shareToInstagram() async {
-  bool installed = await isAppInstalled(instagramPackage);
+  Future<void> shareToFacebook() async {
+    bool installed = await isAppInstalled(facebookPackage);
 
-  if (installed) {
-    Share.share(shareText); // Instagram uses share dialog
-  } else {
-    final playStoreUrl = Uri.parse(
-      "https://play.google.com/store/apps/details?id=$instagramPackage",
-    );
+    if (installed) {
+      final url = Uri.parse(
+        "fb://facewebmodal/f?href=${Uri.encodeComponent(shareText)}",
+      );
 
-    await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      final playStoreUrl = Uri.parse(
+        "https://play.google.com/store/apps/details?id=$facebookPackage",
+      );
+
+      await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+    }
   }
-}
 
-Future<void> shareToTwitter() async {
-  bool installed = await isAppInstalled(twitterPackage);
+  Future<void> shareToInstagram() async {
+    bool installed = await isAppInstalled(instagramPackage);
 
-  if (installed) {
-    final url = Uri.parse(
-      "twitter://post?message=${Uri.encodeComponent(shareText)}",
-    );
+    if (installed) {
+      Share.share(shareText); // Instagram uses share dialog
+    } else {
+      final playStoreUrl = Uri.parse(
+        "https://play.google.com/store/apps/details?id=$instagramPackage",
+      );
 
-    await launchUrl(url, mode: LaunchMode.externalApplication);
-  } else {
-    final playStoreUrl = Uri.parse(
-      "https://play.google.com/store/apps/details?id=$twitterPackage",
-    );
-
-    await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+      await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+    }
   }
-}
 
-Future<void> loadCpId() async {
-  final prefs = await SharedPreferences.getInstance();
+  Future<void> shareToTwitter() async {
+    bool installed = await isAppInstalled(twitterPackage);
 
-  int? id = prefs.getInt("cpId");
+    if (installed) {
+      final url = Uri.parse(
+        "twitter://post?message=${Uri.encodeComponent(shareText)}",
+      );
 
-  setState(() {
-    cpId = id?.toString() ?? "";
-  });
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      final playStoreUrl = Uri.parse(
+        "https://play.google.com/store/apps/details?id=$twitterPackage",
+      );
 
-  /// 🔥 DEBUG
-  print("CP ID: $cpId");
-}
+      await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> loadCpId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    int? id = prefs.getInt("cpId");
+
+    setState(() {
+      cpId = id?.toString() ?? "";
+    });
+
+    /// 🔥 DEBUG
+    print("CP ID: $cpId");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,8 +196,8 @@ Future<void> loadCpId() async {
                       children: [
                         Expanded(
                           child: Text(
-                           // "GJKED-CP2024-001",
-                             cpId.isEmpty ? "Loading..." : cpId,
+                            // "GJKED-CP2024-001",
+                            cpId.isEmpty ? "Loading..." : cpId,
                             style: TextStyle(
                               color: Color(0xFFD4AF37),
                               fontSize: 18,
@@ -265,10 +264,13 @@ Future<void> loadCpId() async {
                     height: 50,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                         Share.share(shareText);
+                        Share.share(shareText);
                       },
-                      icon: const Icon(Icons.share, color: Colors.white,),
-                      label: const Text("Share Link", style: TextStyle(color: Colors.white),),
+                      icon: const Icon(Icons.share, color: Colors.white),
+                      label: const Text(
+                        "Share Link",
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0A2A6A),
                         shape: RoundedRectangleBorder(
@@ -293,45 +295,45 @@ Future<void> loadCpId() async {
             const SizedBox(height: 16),
 
             Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    GestureDetector(
-      onTap: shareToWhatsApp,
-      child: const SocialItem(
-        icon: Icons.chat,
-        color: Colors.green,
-        label: "WhatsApp",
-      ),
-    ),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: shareToWhatsApp,
+                  child: const SocialItem(
+                    icon: Icons.chat,
+                    color: Colors.green,
+                    label: "WhatsApp",
+                  ),
+                ),
 
-    GestureDetector(
-      onTap: shareToFacebook,
-      child: const SocialItem(
-        icon: Icons.facebook,
-        color: Colors.blue,
-        label: "Facebook",
-      ),
-    ),
+                GestureDetector(
+                  onTap: shareToFacebook,
+                  child: const SocialItem(
+                    icon: Icons.facebook,
+                    color: Colors.blue,
+                    label: "Facebook",
+                  ),
+                ),
 
-    GestureDetector(
-      onTap: shareToInstagram,
-      child: const SocialItem(
-        icon: Icons.camera_alt,
-        color: Colors.pink,
-        label: "Instagram",
-      ),
-    ),
+                GestureDetector(
+                  onTap: shareToInstagram,
+                  child: const SocialItem(
+                    icon: Icons.camera_alt,
+                    color: Colors.pink,
+                    label: "Instagram",
+                  ),
+                ),
 
-    GestureDetector(
-      onTap: shareToTwitter,
-      child: const SocialItem(
-        icon: Icons.alternate_email,
-        color: Colors.lightBlue,
-        label: "Twitter",
-      ),
-    ),
-  ],
-),
+                GestureDetector(
+                  onTap: shareToTwitter,
+                  child: const SocialItem(
+                    icon: Icons.alternate_email,
+                    color: Colors.lightBlue,
+                    label: "Twitter",
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 24),
 
             /// 💰 Benefits
@@ -410,9 +412,14 @@ class BenefitItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text("• ", style: TextStyle(fontSize: 18)),
-          Expanded(child: Text("")),
+        children: [
+          const Text("• ", style: TextStyle(fontSize: 18)),
+          Expanded(
+            child: Text(
+              text, // ✅ FIXED
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
         ],
       ),
     );

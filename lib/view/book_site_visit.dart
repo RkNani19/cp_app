@@ -43,17 +43,17 @@ class _BookSiteVisitScreenState extends State<BookSiteVisitScreen> {
     getCpId();
   }
 
-Future<void> getCpId() async {
-  final prefs = await SharedPreferences.getInstance();
+  Future<void> getCpId() async {
+    final prefs = await SharedPreferences.getInstance();
 
-  int? storedCpId = prefs.getInt('cpId'); // ✅ correct key + type
+    int? storedCpId = prefs.getInt('cpId'); // ✅ correct key + type
 
-  setState(() {
-    cpId = storedCpId?.toString(); // convert int → string
-  });
+    setState(() {
+      cpId = storedCpId?.toString(); // convert int → string
+    });
 
-  print("CP ID: $cpId"); // debug
-}
+    print("CP ID: $cpId"); // debug
+  }
 
   Future<void> fetchProjects() async {
     try {
@@ -136,16 +136,21 @@ Future<void> getCpId() async {
         final data = jsonDecode(response.body);
 
         if (data[0]['msg'] == 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data[0]['error_text'] ?? "Failed")),
-          );
+          /// ❌ FAILED CASE
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Reengage")));
+
+          /// ✅ CLEAR FORM
+          clearForm();
         } else {
+          /// ✅ SUCCESS CASE
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text("Booking Successful")));
 
-          /// ✅ CLEAR FORM
-          clearForm();
+          /// 🔥 GO BACK TO PREVIOUS SCREEN
+          Navigator.pop(context);
         }
       } else {
         throw Exception("API Failed");
@@ -337,7 +342,7 @@ Future<void> getCpId() async {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      onPressed:submitSiteVisit,
+                      onPressed: submitSiteVisit,
                       child: const Text(
                         "Confirm Booking",
                         style: TextStyle(

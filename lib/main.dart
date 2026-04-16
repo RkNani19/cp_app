@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gjk_cp/view/SearchViewModel.dart';
 import 'package:gjk_cp/view/splash_screen.dart';
 import 'package:gjk_cp/view/tele_caller.dart';
 import 'package:gjk_cp/viewmodel/banner_viewmodel.dart';
@@ -25,6 +26,7 @@ void main() {
         //  ChangeNotifierProvider(
         //   create: (_) => BannerViewModel()..fetchBanners(),
         // ),
+        ChangeNotifierProvider(create: (_) => SearchViewModel()),
         ChangeNotifierProvider(create: (_) => BannerViewModel()),
         ChangeNotifierProvider(create: (_) => FethProjectViewmodel()),
         ChangeNotifierProvider(

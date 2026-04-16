@@ -23,8 +23,8 @@ class BannerViewModel extends ChangeNotifier {
 
       final response = await http.get(Uri.parse(url));
 
-      print("👉 STATUS CODE: ${response.statusCode}");
-      print("👉 RESPONSE BODY: ${response.body}");
+     // print("👉 STATUS CODE: ${response.statusCode}");
+     // print("👉 RESPONSE BODY: ${response.body}");
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
@@ -33,15 +33,15 @@ class BannerViewModel extends ChangeNotifier {
             .map((e) => BannerModel.fromJson(e))
             .toList();
 
-        print("✅ BANNERS COUNT: ${banners.length}");
+       // print("✅ BANNERS COUNT: ${banners.length}");
 
         // 🔥 PRINT EACH ITEM
         for (var banner in banners) {
-          print("📛 NAME: ${banner.name}");
-          print("🖼 IMAGE: ${banner.image}");
+        //  print("📛 NAME: ${banner.name}");
+         // print("🖼 IMAGE: ${banner.image}");
         }
       } else {
-        print("❌ API FAILED");
+       // print("❌ API FAILED");
       }
 
       isLoading = false;

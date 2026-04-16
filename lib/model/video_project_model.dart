@@ -2,10 +2,7 @@ class VideoProjectModel {
   final String id;
   final String name;
 
-  VideoProjectModel({
-    required this.id,
-    required this.name,
-  });
+  VideoProjectModel({required this.id, required this.name});
 
   factory VideoProjectModel.fromJson(Map<String, dynamic> json) {
     return VideoProjectModel(

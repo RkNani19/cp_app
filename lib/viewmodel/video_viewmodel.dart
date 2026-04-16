@@ -8,32 +8,29 @@ class VideoViewModel extends ChangeNotifier {
   List<VideoModel> videos = [];
   bool isLoading = false;
 
- Future<void> fetchVideos() async {
-  isLoading = true;
-  notifyListeners();
+  Future<void> fetchVideos() async {
+    isLoading = true;
+    notifyListeners();
 
-  try {
-    final url =
-        "${AppConfig.baseUrl}/customerapp/getprojectslistsvideos";
+    try {
+      final url = "${AppConfig.baseUrl}/customerapp/getprojectslistsvideos";
 
-    print("VIDEO API URL: $url"); // ✅ Correct URL print
+      print("VIDEO API URL: $url"); // ✅ Correct URL print
 
-    final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
 
-    print("VIDEO API RESPONSE: ${response.body}");
+      print("VIDEO API RESPONSE: ${response.body}");
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-      videos = data
-          .map<VideoModel>((e) => VideoModel.fromJson(e))
-          .toList();
+        videos = data.map<VideoModel>((e) => VideoModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print("VIDEO ERROR: $e");
     }
-  } catch (e) {
-    print("VIDEO ERROR: $e");
-  }
 
-  isLoading = false;
-  notifyListeners();
-}
+    isLoading = false;
+    notifyListeners();
+  }
 }

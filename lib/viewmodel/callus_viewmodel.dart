@@ -20,8 +20,8 @@ class CallusViewmodel extends ChangeNotifier {
         Uri.parse("${AppConfig.baseUrl}/customerapp/getofficedetails"),
       );
 
-      print("API URL: $Uri.parse");
-      print("API RESPONSE: ${response.body}");
+      print("contact us: $Uri.parse");
+      // print("API RESPONSE: ${response.body}");
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

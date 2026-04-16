@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:gjk_cp/config/app_config.dart';
 import 'package:gjk_cp/model/ProjectDetailsModel.dart';
 import 'package:gjk_cp/model/project_model.dart';
+import 'package:gjk_cp/view/availability.dart';
 import 'package:gjk_cp/view/book_site_visit.dart';
+import 'package:gjk_cp/view/video_screen.dart';
 import 'package:gjk_cp/viewmodel/EnquiryViewModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProjectDetailsScreen extends StatefulWidget {
   final String projectId;
@@ -33,7 +37,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   Future<void> fetchDetails() async {
     final url =
         "${AppConfig.baseUrl}/customerapp/menucontentnew?menu_id=${widget.projectId}";
-
+    print("projectdetails==>: $url");
     final res = await http.get(Uri.parse(url));
 
     if (res.statusCode == 200) {
@@ -93,9 +97,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text("Starting from"),
-                  const Text(
-                    "₹2.45 Cr",
-                    style: TextStyle(
+                  Text(
+                    "₹${data!.salePrice}", // Changed from static to dynamic
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF0A2A6A),
@@ -116,11 +120,38 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      actionItem(Icons.picture_as_pdf, "Brochure"),
-                      actionItem(Icons.map, "Layout"),
-                      actionItem(Icons.location_on, "Map"),
-                      actionItem(Icons.videocam, "Videos"),
-                      actionItem(Icons.check_box, "Availability"),
+                      actionItem(Icons.picture_as_pdf, "Brochure", () {
+                        showFileOptions(data!.brochureDtl);
+                      }),
+                      actionItem(Icons.map, "Layout", () {
+                        showFileOptions(data!.layoutDtl);
+                      }),
+                      actionItem(Icons.location_on, "Map", () {
+                        openMap(data!.lat, data!.lng);
+                      }),
+                      actionItem(Icons.videocam, "Videos", () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VideoScreen(
+                              title: data!.name, // ✅ pass project name
+                            ),
+                          ),
+                        );
+                      }),
+                      // Find this line in your code:
+                      actionItem(Icons.check_box, "Availability", () {
+                        // Add the navigation logic here:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AvailabilityScreen(
+                              projectId: widget.projectId,
+                              projectName: data!.name,
+                            ),
+                          ),
+                        );
+                      }),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -260,23 +291,26 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     );
   }
 
-  Widget actionItem(IconData icon, String text) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: const BoxDecoration(
-            color: Color(0xFFF1EFE9),
-            shape: BoxShape.circle,
+  Widget actionItem(IconData icon, String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF1EFE9),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Color(0xFF0A2A6A), size: 22),
           ),
-          child: Icon(icon, color: Color(0xFF0A2A6A), size: 22),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          text,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ],
+          const SizedBox(height: 6),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
     );
   }
 
@@ -571,6 +605,120 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       debugPrint('Error fetching projects: $e');
     } finally {
       setState(() => _projectsLoading = false);
+    }
+  }
+
+  void showFileOptions(String url) {
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("No data available")));
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// 🔷 TITLE
+                const Text(
+                  "Select Option",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// 🔥 BUTTON ROW
+                Row(
+                  children: [
+                    /// 🔷 SHARE BUTTON (LEFT)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Share.share(url);
+                        },
+                        icon: const Icon(Icons.share),
+                        label: const Text("Share"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade200,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    /// 🔷 VIEW BUTTON (RIGHT)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          Navigator.pop(context);
+
+                          final uri = Uri.parse(url);
+
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Cannot open file")),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.remove_red_eye),
+                        label: const Text("View"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0A2A6A),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void openMap(String lat, String lng) async {
+    if (lat.isEmpty || lng.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Location not available")));
+      return;
+    }
+
+    final url = "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+
+    final uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Could not open map")));
     }
   }
 }

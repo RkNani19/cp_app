@@ -6,13 +6,9 @@ import 'package:gjk_cp/config/app_config.dart'; // ✅ import this
 class LoginService {
   Future<LoginModel?> login(String email, String password) async {
     try {
-     
-      final uri = Uri.parse("${AppConfig.baseUrl}/mobileapp/cplogin").replace(
-        queryParameters: {
-          "email": email,
-          "password": password,
-        },
-      );
+      final uri = Uri.parse(
+        "${AppConfig.baseUrl}/mobileapp/cplogin",
+      ).replace(queryParameters: {"email": email, "password": password});
 
       print("API URL: $uri");
 

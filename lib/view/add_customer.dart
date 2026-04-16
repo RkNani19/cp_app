@@ -71,7 +71,7 @@ Future<void> loadCpId() async {
     cpId = storedCpId?.toString() ?? "";
   });
 
-  print("CP ID LOADED: $cpId");
+ // print("CP ID LOADED: $cpId");
 }
 
   // --- API call to fetch the list of projects ---
@@ -82,7 +82,7 @@ Future<void> loadCpId() async {
       );
 
       // 🔥 ONLY THIS PRINT
-      print(response.body);
+       print("👉add new: $Uri");
 
       if (response.statusCode == 200) {
         final List data = jsonDecode(response.body);

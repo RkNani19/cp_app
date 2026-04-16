@@ -4,6 +4,11 @@ class ProjectDetailsModel {
   final String image;
   final String lat;
   final String lng;
+  final String salePrice;
+
+  /// ✅ ADD THESE
+  final String brochureDtl;
+  final String layoutDtl;
 
   ProjectDetailsModel({
     required this.name,
@@ -11,6 +16,9 @@ class ProjectDetailsModel {
     required this.image,
     required this.lat,
     required this.lng,
+    required this.brochureDtl,
+    required this.layoutDtl,
+    required this.salePrice,
   });
 
   factory ProjectDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +28,13 @@ class ProjectDetailsModel {
       image: json['menu_icon'] ?? "",
       lat: json['lat'] ?? "",
       lng: json['lan'] ?? "",
+      salePrice: json['sale_price'] ?? 'N/A',
+
+      /// ✅ MAP FROM API
+      brochureDtl: json['brochure_dtl'] ?? "",
+      layoutDtl: json['layout_dtl'] ?? "",
     );
   }
+
+   
 }
